@@ -19,6 +19,7 @@ class PhoneController extends AbstractController
     public function createAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
     {        
         $phone = new Phone;
+
         $errors = $validator->validate($phone);
 
         if (count($errors) > 0) {
