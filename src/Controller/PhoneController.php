@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
-use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -42,7 +42,20 @@ class PhoneController extends AbstractController
         $manager->persist($phone);
         $manager->flush();
 
-        return new Response('', Response::HTTP_CREATED);
+        return new Response('Ajout du téléphone effectué avec succès !', Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route("/phones/delete/{id}", name="phone_delete")
+     */
+    public function Delete(Phone $phone)
+    {
+        $manager = $this->getDoctrine()->getManager();
+
+        $manager->remove($phone);
+        $manager->flush();
+
+        return new Response('Suppression effectués avec succès !', Response::HTTP_CREATED);
     }
 
     /**
@@ -77,9 +90,5 @@ class PhoneController extends AbstractController
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
-
-        return $this->render('phone/index.html.twig', [
-            'controller_name' => 'PhoneController',
-        ]);
     }
 }
