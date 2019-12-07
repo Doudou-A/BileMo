@@ -21,17 +21,20 @@ class Phone
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
      * @Groups({"list", "detail"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
-     * @Assert\NotBlank
      * @Groups({"list", "detail"})
      */
     private $content;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $dateCreated;
 
     public function getId(): ?int
     {
@@ -58,6 +61,18 @@ class Phone
     public function setContent(string $content): self
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function getDateCreated(): ?\DateTimeInterface
+    {
+        return $this->dateCreated;
+    }
+
+    public function setDateCreated(\DateTimeInterface $dateCreated): self
+    {
+        $this->dateCreated = $dateCreated;
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,6 +36,7 @@ class PhoneController extends AbstractController
 
         $data = $request->getContent();
         $phone = $serializer->deserialize($data, Phone::class, 'json');
+        $phone->setDateCreated(new \DateTime());
 
         $manager = $this->getDoctrine()->getManager();
         $manager->persist($phone);
@@ -44,11 +46,15 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/phones/all", name="phone_all")
+     * @Route("/phones/all/{page}", name="phone_all")
      */
-    public function showAll(SerializerInterface $serializer, PhoneRepository $repo)
+    public function showAll(SerializerInterface $serializer, PhoneRepository $repo, $page)
     {
-        $phones = $repo->findAll();
+        $nbPhonesParPage = 5;
+
+        $phones = $repo->findAll(); 
+
+        $phones = $repo->findAllPagineEtTrie($page, $nbPhonesParPage);
 
         $data = $serializer->serialize($phones, 'json', ['groups' => 'list']);
 
