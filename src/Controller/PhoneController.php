@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PhoneController extends AbstractController
@@ -15,8 +16,22 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones", name="phone_create")
      */
-    public function createAction(Request $request, SerializerInterface $serializer)
+    public function createAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
     {        
+        $phone = new Phone;
+        $errors = $validator->validate($phone);
+
+        if (count($errors) > 0) {
+            /*
+             * Uses a __toString method on the $errors variable which is a
+             * ConstraintViolationList object. This gives us a nice string
+             * for debugging.
+             */
+            $errorsString = (string) $errors;
+    
+            return new Response($errorsString);
+        }
+
         $data = $request->getContent();
         $phone = $serializer->deserialize($data, Phone::class, 'json');
 
