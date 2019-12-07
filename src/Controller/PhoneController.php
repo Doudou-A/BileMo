@@ -53,13 +53,11 @@ class PhoneController extends AbstractController
         $data = $serializer->serialize($phones, 'json', ['groups' => 'list']);
 
         $response = new Response($data);
+
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
 
-        return $this->render('phone/index.html.twig', [
-            'controller_name' => 'PhoneController',
-        ]);
     }
 
     /**
