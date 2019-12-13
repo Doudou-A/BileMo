@@ -49,13 +49,31 @@ class PhoneController extends AbstractController
      * @Route("/phones/delete/{id}", name="phone_delete")
      */
     public function Delete(Phone $phone)
-    {
+    {        
         $manager = $this->getDoctrine()->getManager();
 
         $manager->remove($phone);
         $manager->flush();
 
-        return new Response('Suppression effectués avec succès !', Response::HTTP_CREATED);
+        return new Response('Suppression effectuée avec succès !', Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route("/phones/modify/{id}", name="phone_modify")
+     */
+    public function Modify(Phone $phone, Request $request, SerializerInterface $serializer)
+    {
+        $data = $request->getContent();
+        dd($data->name());
+        $phone = $serializer->deserialize($data, Phone::class, 'json');
+
+        $phone->setName('name');
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($phone);
+        $manager->flush();
+
+        return new Response('Modifications effectuées avec succès !', Response::HTTP_CREATED);
     }
 
     /**
