@@ -64,10 +64,10 @@ class PhoneController extends AbstractController
     public function Modify(Phone $phone, Request $request, SerializerInterface $serializer)
     {
         $data = $request->getContent();
-        dd($data->name());
-        $phone = $serializer->deserialize($data, Phone::class, 'json');
+        $phoneData = $serializer->deserialize($data, Phone::class, 'json');
 
-        $phone->setName('name');
+        $phone->setName($phoneData->getName());
+        $phone->setContent($phoneData->getContent());
 
         $manager = $this->getDoctrine()->getManager();
         $manager->persist($phone);
