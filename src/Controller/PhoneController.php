@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Entity\Admin;
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,9 +12,27 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PhoneController extends AbstractController
 {
+    /**
+     * @ROUTE("admin/add-user", name="add_user")
+     */
+    public function AddUser(Request $request, SerializerInterface $serializer)
+    {
+        $user = new User;
+        $data = $request->getContent();
+        $user = $serializer->deserialize($data, User::class, 'json');
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($user);
+        $manager->flush();
+
+        return new Response('Ajout de l\'utilisateur effectué avec succès !', Response::HTTP_CREATED);
+    }
+
     /**
      * @Route("/phones", name="phone_create")
      */
@@ -56,6 +76,44 @@ class PhoneController extends AbstractController
 
         return new Response('Suppression effectuée avec succès !', Response::HTTP_CREATED);
     }
+
+    /**
+     * @Route("/inscription", name="security_registration")
+     */
+    public function registration(Request $request, UserPasswordEncoderInterface $encoder, SerializerInterface $serializer)
+    {
+        $admin = new Admin;
+        $data = $request->getContent();
+        $adminData = $serializer->deserialize($data, Admin::class, 'json');
+
+        $admin->setUsername($adminData->getUsername());
+        $hash = $encoder->encodePassword($adminData, $adminData->getPassword());
+        $admin->setPassword($hash);
+
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($admin);
+        $manager->flush();
+
+        return new Response('Ajout effectuées avec succès !', Response::HTTP_CREATED);
+    }
+
+
+    /** 
+     * @Route("/login/administrator", name="security_login")
+     */
+    public function login(Request $request)
+    {
+        $admin = $this->getUser(); 
+
+        return $this->json([
+            'username' => $admin->getUsername(),
+            'roles' => $admin->getRoles(),
+        ]);
+
+        /* return new Response('Connexion réussi !', Response::HTTP_CREATED); */
+    }
+
 
     /**
      * @Route("/phones/modify/{id}", name="phone_modify")
