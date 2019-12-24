@@ -2,7 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Entity\Admin;
 use App\Entity\Phone;
+use Firebase\JWT\JWT;
+use App\Service\Token;
+use App\Service\Content;
+use App\Service\Message;
+use App\Service\Persist;
+use App\Repository\AdminRepository;
 use App\Repository\PhoneRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,79 +18,90 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PhoneController extends AbstractController
 {
+
     /**
-     * @Route("/phones", name="phone_create")
+     * @Route("/admin/phones/{token}", name="phone_create")
      */
-    public function createAction(Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
-    {        
-        $phone = new Phone;
+    public function createAction($token, Persist $persist, Content $content, Token $tokenVerify, Message $message)
+    {
+        $tokenVerify->verify($token);
 
-        $errors = $validator->validate($phone);
+        $phone = $content->getData('phone');
 
-        if (count($errors) > 0) {
-            /*
-             * Uses a __toString method on the $errors variable which is a
-             * ConstraintViolationList object. This gives us a nice string
-             * for debugging.
-             */
-            $errorsString = (string) $errors;
-    
-            return new Response($errorsString);
-        }
-
-        $data = $request->getContent();
-        $phone = $serializer->deserialize($data, Phone::class, 'json');
         $phone->setDateCreated(new \DateTime());
 
-        $manager = $this->getDoctrine()->getManager();
-        $manager->persist($phone);
-        $manager->flush();
+        $persist->persistEntity($phone);
 
-        return new Response('Ajout du téléphone effectué avec succès !', Response::HTTP_CREATED);
+        return $message->addSuccess();
     }
 
     /**
-     * @Route("/phones/delete/{id}", name="phone_delete")
+     * @Route("/admin/phones/delete/{id}/{token}", name="phone_delete")
      */
-    public function Delete(Phone $phone)
-    {        
-        $manager = $this->getDoctrine()->getManager();
-
-        $manager->remove($phone);
-        $manager->flush();
-
-        return new Response('Suppression effectuée avec succès !', Response::HTTP_CREATED);
-    }
-
-    /**
-     * @Route("/phones/modify/{id}", name="phone_modify")
-     */
-    public function Modify(Phone $phone, Request $request, SerializerInterface $serializer)
+    public function Delete(Phone $phone, $token, Token $tokenVerify, Persist $persist, Message $message)
     {
+        $tokenVerify->verify($token);
+
+        $persist->remove($phone);
+        
+        return $message->removeSuccess();
+    }
+
+    /**
+     * @Route("/inscription", name="security_registration")
+     */
+    public function registration(Request $request, UserPasswordEncoderInterface $encoder, SerializerInterface $serializer)
+    {
+        $admin = new Admin();
         $data = $request->getContent();
-        $phoneData = $serializer->deserialize($data, Phone::class, 'json');
+        $admin = $serializer->deserialize($data, Admin::class, 'json');
+
+
+        $hash = $encoder->encodePassword($admin, $admin->getPassword());
+
+        $admin->setUsername($admin->getUsername());
+        $admin->setPassword($hash);
+
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($admin);
+        $manager->flush();
+
+        return new Response('Ajout effectuées avec succès !', Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route("/admin/phones/modify/{id}/{token}", name="phone_modify")
+     */
+    public function Modify(Phone $phone, $token, Token $tokenVerify,  Content $content, Persist $persist, Message $message)
+    {
+        $tokenVerify->verify($token);
+
+        $phoneData = $content->getData('phone');
 
         $phone->setName($phoneData->getName());
         $phone->setContent($phoneData->getContent());
 
-        $manager = $this->getDoctrine()->getManager();
-        $manager->persist($phone);
-        $manager->flush();
+        $persist->persistEntity($phone);
 
-        return new Response('Modifications effectuées avec succès !', Response::HTTP_CREATED);
+        return $message->modifySuccess();
     }
 
     /**
-     * @Route("/phones/all/{page}", name="phone_all")
+     * @Route("/phones/all/{page}/{token}", name="phone_all")
      */
-    public function showAll(SerializerInterface $serializer, PhoneRepository $repo, $page)
+    public function showAll($token, Token $tokenVerify, SerializerInterface $serializer, PhoneRepository $repo, $page)
     {
+        $tokenVerify->verify($token);
+
         $nbPhonesParPage = 5;
 
-        $phones = $repo->findAll(); 
+        $phones = $repo->findAll();
 
         $phones = $repo->findAllPagineEtTrie($page, $nbPhonesParPage);
 
@@ -93,14 +112,15 @@ class PhoneController extends AbstractController
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
-
     }
 
     /**
-     * @Route("/phones/{id}", name="phone_show")
+     * @Route("/phones/{id}/{token}", name="phone_show")
      */
-    public function showAction(Phone $phone, SerializerInterface $serializer)
+    public function showAction($token, Token $tokenVerify, Phone $phone, SerializerInterface $serializer)
     {
+        $tokenVerify->verify($token);
+
         $data = $serializer->serialize($phone, 'json', ['groups' => 'detail']);
 
         $response = new Response($data);

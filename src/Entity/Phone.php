@@ -36,6 +36,11 @@ class Phone
      */
     private $dateCreated;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Client", inversedBy="phones")
+     */
+    private $client;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -73,6 +78,18 @@ class Phone
     public function setDateCreated(\DateTimeInterface $dateCreated): self
     {
         $this->dateCreated = $dateCreated;
+
+        return $this;
+    }
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): self
+    {
+        $this->client = $client;
 
         return $this;
     }
