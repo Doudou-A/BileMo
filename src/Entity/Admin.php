@@ -42,11 +42,6 @@ class Admin implements UserInterface
      */
     private $firstName;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $dateCreated;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -109,18 +104,6 @@ class Admin implements UserInterface
     public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getDateCreated(): ?\DateTimeInterface
-    {
-        return $this->dateCreated;
-    }
-
-    public function setDateCreated(\DateTimeInterface $dateCreated): self
-    {
-        $this->dateCreated = $dateCreated;
 
         return $this;
     }

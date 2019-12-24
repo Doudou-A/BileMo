@@ -65,7 +65,6 @@ class PhoneController extends AbstractController
         $hash = $encoder->encodePassword($admin, $admin->getPassword());
 
         $admin->setUsername($admin->getUsername());
-        $admin->setDateCreated(new \DateTime());
         $admin->setPassword($hash);
 
 
