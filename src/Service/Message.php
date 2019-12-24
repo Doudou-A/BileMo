@@ -20,4 +20,9 @@ class Message
     {
         return new Response('Modification effectuée avec succès !', Response::HTTP_CREATED);
     }
+
+    public function RelationFail()
+    {
+        return new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_CREATED);
+    }
 }

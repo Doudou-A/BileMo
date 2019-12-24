@@ -6,8 +6,10 @@ use App\Entity\User;
 use App\Entity\Admin;
 use App\Entity\Phone;
 use Firebase\JWT\JWT;
+use App\Entity\Client;
 use App\Service\Token;
 use App\Service\Content;
+use App\Service\Manager;
 use App\Service\Message;
 use App\Service\Persist;
 use App\Repository\AdminRepository;
@@ -27,15 +29,16 @@ class PhoneController extends AbstractController
     /**
      * @Route("/admin/phones/{token}", name="phone_create")
      */
-    public function createAction($token, Persist $persist, Content $content, Token $tokenVerify, Message $message)
+    public function createAction($token, Manager $manager, Content $content, Token $tokenVerify, Message $message)
     {
         $tokenVerify->verify($token);
 
         $phone = $content->getData('phone');
 
         $phone->setDateCreated(new \DateTime());
+        $phone->setAvailability(true);
 
-        $persist->persistEntity($phone);
+        $manager->persist($phone);
 
         return $message->addSuccess();
     }
@@ -43,11 +46,11 @@ class PhoneController extends AbstractController
     /**
      * @Route("/admin/phones/delete/{id}/{token}", name="phone_delete")
      */
-    public function Delete(Phone $phone, $token, Token $tokenVerify, Persist $persist, Message $message)
+    public function Delete(Phone $phone, $token, Token $tokenVerify, Manager $manager, Message $message)
     {
         $tokenVerify->verify($token);
 
-        $persist->remove($phone);
+        $manager->remove($phone);
         
         return $message->removeSuccess();
     }
@@ -78,7 +81,7 @@ class PhoneController extends AbstractController
     /**
      * @Route("/admin/phones/modify/{id}/{token}", name="phone_modify")
      */
-    public function Modify(Phone $phone, $token, Token $tokenVerify,  Content $content, Persist $persist, Message $message)
+    public function Modify(Phone $phone, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
     {
         $tokenVerify->verify($token);
 
@@ -87,7 +90,27 @@ class PhoneController extends AbstractController
         $phone->setName($phoneData->getName());
         $phone->setContent($phoneData->getContent());
 
-        $persist->persistEntity($phone);
+        $manager->persist($phone);
+
+        return $message->modifySuccess();
+    }
+
+    /**
+     * @Route("/phones/relation/{serialNumber}/{email}/{token}", name="relation")
+     */
+    public function Relation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
+    {
+        $tokenVerify->verify($token);
+
+        $availability = $phone->getAvailability();
+        if($availability == false){
+            return $message->RelationFail();
+        }
+
+        $phone->setAvailability(false);
+        $phone->setClient($client);
+
+        $manager->persist($phone);
 
         return $message->modifySuccess();
     }
@@ -95,7 +118,7 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones/all/{page}/{token}", name="phone_all")
      */
-    public function showAll($token, Token $tokenVerify, SerializerInterface $serializer, PhoneRepository $repo, $page)
+    public function showPhoneAll($token, Token $tokenVerify, SerializerInterface $serializer, PhoneRepository $repo, $page)
     {
         $tokenVerify->verify($token);
 
@@ -117,7 +140,7 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones/{id}/{token}", name="phone_show")
      */
-    public function showAction($token, Token $tokenVerify, Phone $phone, SerializerInterface $serializer)
+    public function showPhoneAction($token, Token $tokenVerify, Phone $phone, SerializerInterface $serializer)
     {
         $tokenVerify->verify($token);
 

@@ -4,7 +4,7 @@ namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-class Persist
+class Manager
 {
     private $manager;
 
@@ -13,7 +13,7 @@ class Persist
         $this->manager = $manager;
     }
 
-    public function persistEntity($entity)
+    public function persist($entity)
     {
         $this->manager->persist($entity);
         $this->manager->flush();

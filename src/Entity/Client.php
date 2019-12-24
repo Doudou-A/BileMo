@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -31,8 +32,9 @@ class Client
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"list", "detail"})
      */
-    private $username;
+    private $email;
 
     /**
      * @ORM\Column(type="datetime")
@@ -84,14 +86,14 @@ class Client
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getEmail(): ?string
     {
-        return $this->username;
+        return $this->email;
     }
 
-    public function setUsername(string $username): self
+    public function setEmail(string $email): self
     {
-        $this->username = $username;
+        $this->email = $email;
 
         return $this;
     }

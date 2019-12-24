@@ -20,22 +20,6 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class SecurityController extends AbstractController
 {
 
-    /**
-     * @ROUTE("add-client/{token}", name="add_client")
-     */
-    public function addClient($token, Token $tokenVerify, Content $content, Persist $persist, Message $message)
-    {
-        $tokenVerify->verify($token);
-
-        $client = $content->getData('client');
-
-        $client->setDateCreated(new \DateTime());
-
-        $persist->persistEntity($client);
-
-        return $message->addSuccess();
-    }
-
     /** 
      * @Route("/login", name="security_login")
      */

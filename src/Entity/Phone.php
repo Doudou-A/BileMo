@@ -32,6 +32,16 @@ class Phone
     private $content;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $availability;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $serialNumber;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $dateCreated;
@@ -90,6 +100,30 @@ class Phone
     public function setClient(?Client $client): self
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    public function getAvailability(): ?bool
+    {
+        return $this->availability;
+    }
+
+    public function setAvailability(bool $availability): self
+    {
+        $this->availability = $availability;
+
+        return $this;
+    }
+
+    public function getSerialNumber(): ?int
+    {
+        return $this->serialNumber;
+    }
+
+    public function setSerialNumber(int $serialNumber): self
+    {
+        $this->serialNumber = $serialNumber;
 
         return $this;
     }

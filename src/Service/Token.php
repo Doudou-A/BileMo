@@ -3,16 +3,19 @@
 namespace App\Service;
 
 use Firebase\JWT\JWT;
+use App\Repository\UserRepository;
 use App\Repository\AdminRepository;
 use Symfony\Component\HttpFoundation\Response;
 
 class Token
 {
-    private $repo;
+    private $repoAdmin;
+    private $repoUser;
 
-    public function __construct(AdminRepository $repo)
+    public function __construct(AdminRepository $repoAdmin, UserRepository $repoUser)
     {
-        $this->repo = $repo;
+        $this->repoAdmin = $repoAdmin;
+        $this->repoUser = $repoUser;
     }
 
     public function verify($token)
@@ -24,12 +27,16 @@ class Token
 
         $id = $decoded_array['Id'];
 
-        $admin = $this->repo->find($id);
+        $entity = $this->repoAdmin->find($id);
+        if($entity == null){
+            $entity = $this->repoUser->find($id);
+        }
+
         $array =array(
-            'Id' => $admin->getId(),
-            'FirstName' => $admin->getFirstName(),
-            'Name' => $admin->getName(),
-            'Username' => $admin->getUsername()
+            'Id' => $entity->getId(),
+            'FirstName' => $entity->getFirstName(),
+            'Name' => $entity->getName(),
+            'Username' => $entity->getUsername()
         );
 
         if($decoded_array != $array)

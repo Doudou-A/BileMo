@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Phone;
+use InvalidArgumentException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
