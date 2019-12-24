@@ -36,22 +36,6 @@ class SecurityController extends AbstractController
         return $message->addSuccess();
     }
 
-    /**
-     * @ROUTE("admin/add-user/{token}", name="add_user")
-     */
-    public function addUser($token, Token $tokenVerify, AddEntity $addEntity, Content $content, Persist $persist, Message $message)
-    {
-        $tokenVerify->verify($token);
-        
-        $data = $content->getData('user');
-
-        $user = $addEntity->setData($data);
-
-        $persist->persistEntity($user);
-
-        return $message->addSuccess();
-    }
-
     /** 
      * @Route("/login", name="security_login")
      */
@@ -72,7 +56,6 @@ class SecurityController extends AbstractController
         return $this->json([
             'firstName' => $user->getFirstName(),
             'Name' => $user->getName(),
-            'DateCreated' => $user->getDateCreated(),
             'Username' => $user->getUsername(),
             'Token' => $jwt,
         ]);
