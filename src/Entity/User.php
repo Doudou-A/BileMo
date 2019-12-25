@@ -25,7 +25,7 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="username", type="string", length=255, unique=true)
      */
     private $username;
 
@@ -56,6 +56,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Client", mappedBy="user", orphanRemoval=true)
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $clients;
 

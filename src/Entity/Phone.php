@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PhoneRepository")
+ *  @UniqueEntity(
+ *  fields= {"serialNumber"},
+ *  message= "Le numéro de série que vous avez indiqué est déjà utilisé !"
+ * )
  */
 class Phone
 {
@@ -15,7 +19,6 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"detail"})
      */
     private $id;
 
@@ -27,17 +30,31 @@ class Phone
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"list", "detail"})
+     * @Groups({"detail"})
      */
     private $content;
 
     /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"detail"})
+     */
+    private $availability;
+
+    /**
+     * @ORM\Column(type="integer", unique=true)
+     * @Groups({"list", "detail"})
+     */
+    private $serialNumber;
+
+    /**
      * @ORM\Column(type="datetime")
+     * @Groups({"list", "detail"})
      */
     private $dateCreated;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Client", inversedBy="phones")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $client;
 
@@ -93,4 +110,29 @@ class Phone
 
         return $this;
     }
+
+    public function getAvailability(): ?bool
+    {
+        return $this->availability;
+    }
+
+    public function setAvailability(bool $availability): self
+    {
+        $this->availability = $availability;
+
+        return $this;
+    }
+
+    public function getSerialNumber(): ?int
+    {
+        return $this->serialNumber;
+    }
+
+    public function setSerialNumber(int $serialNumber): self
+    {
+        $this->serialNumber = $serialNumber;
+
+        return $this;
+    }
+
 }

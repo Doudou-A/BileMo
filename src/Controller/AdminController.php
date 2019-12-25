@@ -2,44 +2,39 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Service\Token;
-use App\Service\Content;
-use App\Service\Message;
-use App\Service\Persist;
-use App\Service\AddEntity;
+use App\Entity\Admin;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AdminController extends AbstractController
 {
     
     /**
-     * @ROUTE("admin/add-user/{token}", name="add_user")
+     * @Route("/inscription", name="security_registration")
      */
-    public function addUser($token, Token $tokenVerify, AddEntity $addEntity, Content $content, Persist $persist, Message $message)
+    public function registration(Request $request, UserPasswordEncoderInterface $encoder, SerializerInterface $serializer)
     {
-        $tokenVerify->verify($token);
+        $admin = new Admin();
+        $data = $request->getContent();
+        $admin = $serializer->deserialize($data, Admin::class, 'json');
 
-        $data = $content->getData('user');
 
-        $user = $addEntity->setData($data);
+        $hash = $encoder->encodePassword($admin, $admin->getPassword());
 
-        $persist->persistEntity($user);
+        $admin->setUsername($admin->getUsername());
+        $admin->setPassword($hash);
 
-        return $message->addSuccess();
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($admin);
+        $manager->flush();
+
+        return new Response('Ajout effectuées avec succès !', Response::HTTP_CREATED);
     }
 
-    /**
-     * @ROUTE("admin/delete-user/{id}/{token}", name="delete-user")
-     */
-    public function deleteUser(User $user, $token, Token $tokenVerify, AddEntity $addEntity, Content $content, Persist $persist, Message $message)
-    {
-        $tokenVerify->verify($token);
-
-        $persist->remove($user);
-        
-        return $message->removeSuccess();
-    }
 
 }

@@ -2,39 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use Firebase\JWT\JWT;
-use App\Service\Token;
-use App\Service\AddUser;
-use App\Service\Content;
-use App\Service\Message;
-use App\Service\Persist;
-use App\Service\AddEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class SecurityController extends AbstractController
 {
-
-    /**
-     * @ROUTE("add-client/{token}", name="add_client")
-     */
-    public function addClient($token, Token $tokenVerify, Content $content, Persist $persist, Message $message)
-    {
-        $tokenVerify->verify($token);
-
-        $client = $content->getData('client');
-
-        $client->setDateCreated(new \DateTime());
-
-        $persist->persistEntity($client);
-
-        return $message->addSuccess();
-    }
 
     /** 
      * @Route("/login", name="security_login")
