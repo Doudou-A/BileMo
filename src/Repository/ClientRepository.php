@@ -22,7 +22,7 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
-    public function findAllPagineEtTrie($page, $nbMaxParPage)
+    public function findAllPagineEtTrie($page, $nbMaxParPage, $user)
     {
         if (!is_numeric($page)) {
             throw new InvalidArgumentException(
@@ -41,6 +41,7 @@ class ClientRepository extends ServiceEntityRepository
         }
     
         $qb = $this->createQueryBuilder('a')
+            ->where('a.user = ' .$user. '')
             ->orderBy('a.dateCreated', 'DESC');
         
         $query = $qb->getQuery();

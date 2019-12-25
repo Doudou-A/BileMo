@@ -46,7 +46,7 @@ class PhoneController extends AbstractController
     /**
      * @Route("/admin/phones/delete/{id}/{token}", name="phone_delete")
      */
-    public function Delete(Phone $phone, $token, Token $tokenVerify, Manager $manager, Message $message)
+    public function phoneDelete(Phone $phone, $token, Token $tokenVerify, Manager $manager, Message $message)
     {
         $tokenVerify->verify($token);
 
@@ -81,7 +81,7 @@ class PhoneController extends AbstractController
     /**
      * @Route("/admin/phones/modify/{id}/{token}", name="phone_modify")
      */
-    public function Modify(Phone $phone, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
+    public function phoneModify(Phone $phone, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
     {
         $tokenVerify->verify($token);
 
@@ -98,9 +98,18 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones/relation/{serialNumber}/{email}/{token}", name="relation")
      */
-    public function Relation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
+    public function relation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
     {
         $tokenVerify->verify($token);
+
+        $user = $this->getUser();
+        $userClient = $client->getUser();
+
+        if($user != $userClient)
+        {
+            return $message->RemoveDenied();
+            die;
+        }
 
         $availability = $phone->getAvailability();
         if($availability == false){
@@ -109,8 +118,38 @@ class PhoneController extends AbstractController
 
         $phone->setAvailability(false);
         $phone->setClient($client);
+        $count = $client->getNumberOfPhone();
+        $client->setNumberOfPhone(++$count);
 
         $manager->persist($phone);
+        $manager->persist($client);
+
+        return $message->modifySuccess();
+    }
+
+    /**
+     * @Route("/phones/remove-relation/{serialNumber}/{email}/{token}", name="relation_remove")
+     */
+    public function removeRelation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
+    {
+        $tokenVerify->verify($token);
+
+        $user = $this->getUser();
+        $userClient = $client->getUser();
+
+        if($user != $userClient)
+        {
+            return $message->RemoveDenied();
+            die;
+        }
+
+        $phone->setAvailability(true);
+        $phone->setClient(null);
+        $count = $client->getNumberOfPhone();
+        $client->setNumberOfPhone(--$count);
+
+        $manager->persist($phone);
+        $manager->persist($client);
 
         return $message->modifySuccess();
     }

@@ -9,6 +9,7 @@ use App\Service\Manager;
 use App\Service\Message;
 use App\Service\AddEntity;
 use App\Repository\ClientRepository;
+use App\Repository\PhoneRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -27,6 +28,7 @@ class ClientController extends AbstractController
         $client = $content->getData('client');
 
         $client->setDateCreated(new \DateTime());
+        $client->setNumberOfPhone(0);
         $user = $this->getUser();
 
         $client->setUser($user);
@@ -39,12 +41,29 @@ class ClientController extends AbstractController
     /**
      * @ROUTE("delete-client/{email}/{token}", name="delete-client")
      */
-    public function deleteClient(Client $client, $token, Token $tokenVerify, AddEntity $addEntity, Content $content, Manager $manager, Message $message)
+    public function deleteClient(Client $client, $token, Token $tokenVerify, Manager $manager, Message $message, PhoneRepository $repo)
     {
         $tokenVerify->verify($token);
 
-        $manager->remove($client);
+        $user = $this->getUser();
+        $userClient = $client->getUser();
+
+        if($user != $userClient)
+        {
+            return $message->RemoveDenied();
+            die;
+        }
         
+        $phones = $repo->findByClient($client);
+
+        foreach ($phones as $phone) {
+            $phone->setAvailability(true);
+            $phone->setClient(null);
+            $manager->persist($phone);
+        }
+
+        $manager->remove($client);
+    
         return $message->removeSuccess();
     }
 
@@ -55,16 +74,31 @@ class ClientController extends AbstractController
     {
         $tokenVerify->verify($token);
 
-        $nbClientsParPage = 1;
+        $user = $this->getUser()->getId();
 
-        $clients = $repo->findAll();
+        $nbClientsParPage = 5;
 
-        $clients = $repo->findAllPagineEtTrie($page, $nbClientsParPage);
-
+        $clients = $repo->findAllPagineEtTrie($page, $nbClientsParPage, $user);
+  
         $data = $serializer->serialize($clients, 'json', ['groups' => 'list']);
 
         $response = new Response($data);
 
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    /**
+     * @Route("/client/{email}/{token}", name="client_show")
+     */
+    public function showClientAction($token, Token $tokenVerify, Client $client, SerializerInterface $serializer)
+    {
+        $tokenVerify->verify($token);
+
+        $data = $serializer->serialize($client, 'json', ['groups' => 'detail']);
+
+        $response = new Response($data);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;

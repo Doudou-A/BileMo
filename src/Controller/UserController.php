@@ -10,6 +10,8 @@ use App\Service\Manager;
 use App\Service\Message;
 use App\Service\Persist;
 use App\Service\AddEntity;
+use App\Repository\ClientRepository;
+use App\Repository\PhoneRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -33,15 +35,27 @@ class UserController extends AbstractController
     }
 
     /**
-     * @ROUTE("admin/delete-user/{id}/{token}", name="delete-user")
+     * @ROUTE("admin/delete-user/{username}/{token}", name="delete-user")
      */
-    public function deleteUser(User $user, $token, Token $tokenVerify, AddEntity $addEntity, Manager $manager, Message $message)
+    public function deleteUser(User $user, $token, Token $tokenVerify, Manager $manager, Message $message, ClientRepository $repoClient, PhoneRepository $repoPhone)
     {
         $tokenVerify->verify($token);
 
+        $clients = $repoClient->findByUser($user);
+
+        foreach ($clients as $client) {
+
+            $phones = $repoPhone->findByClient($client);
+
+            foreach ($phones as $phone) {
+                $phone->setAvailability(true);
+                $phone->setClient(null);
+                $manager->persist($phone);
+            }
+        }
+
         $manager->remove($user);
-        
+
         return $message->removeSuccess();
     }
-    
 }

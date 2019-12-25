@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PhoneRepository")
+ *  @UniqueEntity(
+ *  fields= {"serialNumber"},
+ *  message= "Le numéro de série que vous avez indiqué est déjà utilisé !"
+ * )
  */
 class Phone
 {
@@ -37,7 +41,7 @@ class Phone
     private $availability;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", unique=true)
      */
     private $serialNumber;
 
@@ -48,6 +52,7 @@ class Phone
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Client", inversedBy="phones")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $client;
 
@@ -127,4 +132,5 @@ class Phone
 
         return $this;
     }
+
 }

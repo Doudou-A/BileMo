@@ -25,4 +25,9 @@ class Message
     {
         return new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_CREATED);
     }
+
+    public function RemoveDenied()
+    {
+        return new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_CREATED);
+    }
 }
