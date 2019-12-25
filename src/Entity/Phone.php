@@ -19,7 +19,6 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"detail"})
      */
     private $id;
 
@@ -31,22 +30,25 @@ class Phone
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"list", "detail"})
+     * @Groups({"detail"})
      */
     private $content;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"detail"})
      */
     private $availability;
 
     /**
      * @ORM\Column(type="integer", unique=true)
+     * @Groups({"list", "detail"})
      */
     private $serialNumber;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"list", "detail"})
      */
     private $dateCreated;
 

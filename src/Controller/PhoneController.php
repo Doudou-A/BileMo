@@ -2,26 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Entity\Admin;
 use App\Entity\Phone;
-use Firebase\JWT\JWT;
 use App\Entity\Client;
 use App\Service\Token;
 use App\Service\Content;
 use App\Service\Manager;
 use App\Service\Message;
-use App\Service\Persist;
-use App\Repository\AdminRepository;
 use App\Repository\PhoneRepository;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PhoneController extends AbstractController
 {
@@ -56,29 +47,6 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/inscription", name="security_registration")
-     */
-    public function registration(Request $request, UserPasswordEncoderInterface $encoder, SerializerInterface $serializer)
-    {
-        $admin = new Admin();
-        $data = $request->getContent();
-        $admin = $serializer->deserialize($data, Admin::class, 'json');
-
-
-        $hash = $encoder->encodePassword($admin, $admin->getPassword());
-
-        $admin->setUsername($admin->getUsername());
-        $admin->setPassword($hash);
-
-
-        $manager = $this->getDoctrine()->getManager();
-        $manager->persist($admin);
-        $manager->flush();
-
-        return new Response('Ajout effectuées avec succès !', Response::HTTP_CREATED);
-    }
-
-    /**
      * @Route("/admin/phones/modify/{id}/{token}", name="phone_modify")
      */
     public function phoneModify(Phone $phone, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
@@ -96,7 +64,7 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/phones/relation/{serialNumber}/{email}/{token}", name="relation")
+     * @Route("/phone/relation/{serialNumber}/{email}/{token}", name="relation")
      */
     public function relation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
     {
@@ -128,7 +96,7 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/phones/remove-relation/{serialNumber}/{email}/{token}", name="relation_remove")
+     * @Route("/phone/remove-relation/{serialNumber}/{email}/{token}", name="relation_remove")
      */
     public function removeRelation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
     {
@@ -155,7 +123,7 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/phones/all/{page}/{token}", name="phone_all")
+     * @Route("/phone/all/{page}/{token}", name="phone_all")
      */
     public function showPhoneAll($token, Token $tokenVerify, SerializerInterface $serializer, PhoneRepository $repo, $page)
     {
@@ -177,7 +145,7 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/phones/{id}/{token}", name="phone_show")
+     * @Route("/phone/{serialNumber}/{token}", name="phone_show")
      */
     public function showPhoneAction($token, Token $tokenVerify, Phone $phone, SerializerInterface $serializer)
     {

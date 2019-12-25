@@ -3,12 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Entity\Client;
 use App\Service\Token;
 use App\Service\Content;
 use App\Service\Manager;
 use App\Service\Message;
-use App\Service\Persist;
 use App\Service\AddEntity;
 use App\Repository\ClientRepository;
 use App\Repository\PhoneRepository;

@@ -41,6 +41,7 @@ class PhoneRepository extends ServiceEntityRepository
         }
     
         $qb = $this->createQueryBuilder('a')
+            ->where('a.availability = true')
             ->orderBy('a.dateCreated', 'DESC');
         
         $query = $qb->getQuery();

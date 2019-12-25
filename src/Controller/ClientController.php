@@ -7,7 +7,6 @@ use App\Service\Token;
 use App\Service\Content;
 use App\Service\Manager;
 use App\Service\Message;
-use App\Service\AddEntity;
 use App\Repository\ClientRepository;
 use App\Repository\PhoneRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +18,7 @@ class ClientController extends AbstractController
 {
     
     /**
-     * @ROUTE("add-client/{token}", name="add_client")
+     * @ROUTE("/client/add-client/{token}", name="add_client")
      */
     public function addClient($token, Token $tokenVerify, Content $content, Manager $manager, Message $message)
     {
@@ -39,7 +38,7 @@ class ClientController extends AbstractController
     }
 
     /**
-     * @ROUTE("delete-client/{email}/{token}", name="delete-client")
+     * @ROUTE("/client/delete-client/{email}/{token}", name="delete-client")
      */
     public function deleteClient(Client $client, $token, Token $tokenVerify, Manager $manager, Message $message, PhoneRepository $repo)
     {
@@ -68,7 +67,7 @@ class ClientController extends AbstractController
     }
 
     /**
-     * @Route("/clients/all/{page}/{token}", name="client_all" )
+     * @Route("/client/all/{page}/{token}", name="client_all" )
      */
     public function showClientAll($token, Token $tokenVerify, SerializerInterface $serializer, ClientRepository $repo, $page)
     {
