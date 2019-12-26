@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\Client;
-use App\Service\Token;
-use App\Service\Content;
-use App\Service\Manager;
 use App\Service\Message;
-use App\Repository\ClientRepository;
-use App\Repository\PhoneRepository;
+use App\Service\PhoneManager;
+use App\Service\ClientManager;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,88 +15,71 @@ class ClientController extends AbstractController
 {
     
     /**
-     * @ROUTE("/client/add-client/{token}", name="add_client")
+     * @ROUTE("/client", name="add_client", methods={"POST"})
      */
-    public function addClient($token, Token $tokenVerify, Content $content, Manager $manager, Message $message)
+    public function addClient(ClientManager $clientManager, Message $message)
     {
-        $tokenVerify->verify($token);
-
-        $client = $content->getData('client');
-
-        $client->setDateCreated(new \DateTime());
-        $client->setNumberOfPhone(0);
         $user = $this->getUser();
 
-        $client->setUser($user);
+        $data = $clientManager->getData();
 
-        $manager->persist($client);
+        $client = $clientManager->add($data, $user);
 
-        return $message->addSuccess();
+        return $message->removeSuccess();
     }
 
     /**
-     * @ROUTE("/client/delete-client/{email}/{token}", name="delete-client")
+     * @ROUTE("/client", name="delete-client", methods={"DELETE"})
      */
-    public function deleteClient(Client $client, $token, Token $tokenVerify, Manager $manager, Message $message, PhoneRepository $repo)
+    public function deleteClient(ClientManager $clientManager, PhoneManager $phoneManager, Message $message)
     {
-        $tokenVerify->verify($token);
-
-        $user = $this->getUser();
+        /* $user = $this->getUser();
         $userClient = $client->getUser();
 
         if($user != $userClient)
         {
             return $message->RemoveDenied();
             die;
-        }
-        
-        $phones = $repo->findByClient($client);
+        } */
+        $client = $clientManager->getClient();
+
+        $phones = $phoneManager->findByClient($client);
 
         foreach ($phones as $phone) {
-            $phone->setAvailability(true);
-            $phone->setClient(null);
-            $manager->persist($phone);
+           $phoneManager->deleteClient($phone);
         }
 
-        $manager->remove($client);
+        $clientManager->remove($client);
     
         return $message->removeSuccess();
     }
 
     /**
-     * @Route("/client/all/{page}/{token}", name="client_all" )
+     * @Route("/client/{page}", name="client_all", methods={"GET"})
      */
-    public function showClientAll($token, Token $tokenVerify, SerializerInterface $serializer, ClientRepository $repo, $page)
+    public function showClientAll(ClientManager $clientManager, $page,  SerializerInterface $serializer)
     {
-        $tokenVerify->verify($token);
-
         $user = $this->getUser()->getId();
 
-        $nbClientsParPage = 5;
-
-        $clients = $repo->findAllPagineEtTrie($page, $nbClientsParPage, $user);
+        $clients = $clientManager->pagination($page, $user);
   
         $data = $serializer->serialize($clients, 'json', ['groups' => 'list']);
 
-        $response = new Response($data);
-
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $clientManager->responseGroups($data);
     }
 
     /**
-     * @Route("/client/{email}/{token}", name="client_show")
+     * @Route("/client", name="client_show", methods={"GET"})
      */
-    public function showClientAction($token, Token $tokenVerify, Client $client, SerializerInterface $serializer)
+    public function showClientAction(ClientManager $clientManager, SerializerInterface $serializer, Request $request)
     {
-        $tokenVerify->verify($token);
+        $request = $request->headers->get('Authorization');
+        dd($request);
+
+        $client = $clientManager->getClient();
 
         $data = $serializer->serialize($client, 'json', ['groups' => 'detail']);
 
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $clientManager->responseGroups($data);
     }
 }

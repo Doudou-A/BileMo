@@ -8,8 +8,9 @@ use App\Service\Content;
 use App\Service\Manager;
 use App\Service\Message;
 use App\Service\AddEntity;
-use App\Repository\ClientRepository;
+use App\Service\UserManager;
 use App\Repository\PhoneRepository;
+use App\Repository\ClientRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -17,42 +18,25 @@ class UserController extends AbstractController
 {
 
     /**
-     * @ROUTE("admin/add-user/{token}", name="add_user")
+     * @ROUTE("admin/user", name="add_user", methods={"POST"})
      */
-    public function addUser($token, Token $tokenVerify, AddEntity $addEntity, Content $content, Manager $manager, Message $message)
+    public function addUser(UserManager $userManager)
     {
-        $tokenVerify->verify($token);
+        $data = $userManager->getData();
 
-        $data = $content->getData('user');
+        $user = $userManager->add($data);
 
-        $user = $addEntity->setData($data);
-
-        $manager->persist($user);
-
-        return $message->addSuccess();
+        return $userManager->response($user);
     }
 
     /**
-     * @ROUTE("admin/delete-user/{username}/{token}", name="delete-user")
+     * @ROUTE("admin/user", name="delete_user", methods={"DELETE"})
      */
-    public function deleteUser(User $user, $token, Token $tokenVerify, Manager $manager, Message $message, ClientRepository $repoClient, PhoneRepository $repoPhone)
+    public function deleteUser(UserManager $userManager, Message $message)
     {
-        $tokenVerify->verify($token);
+        $user = $userManager->getUser();
 
-        $clients = $repoClient->findByUser($user);
-
-        foreach ($clients as $client) {
-
-            $phones = $repoPhone->findByClient($client);
-
-            foreach ($phones as $phone) {
-                $phone->setAvailability(true);
-                $phone->setClient(null);
-                $manager->persist($phone);
-            }
-        }
-
-        $manager->remove($user);
+        $userManager->delete($user);
 
         return $message->removeSuccess();
     }

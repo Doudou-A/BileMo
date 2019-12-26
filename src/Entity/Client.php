@@ -59,7 +59,6 @@ class Client
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Phone", mappedBy="client")
      * @ORM\JoinColumn(onDelete="SET NULL")
-     * @Groups({"detail"})
      */
     private $phones;
 

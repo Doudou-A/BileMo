@@ -8,7 +8,10 @@ use App\Service\Token;
 use App\Service\Content;
 use App\Service\Manager;
 use App\Service\Message;
+use App\Service\PhoneManager;
+use App\Service\PhoneService;
 use App\Repository\PhoneRepository;
+use App\Service\ClientManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,144 +21,105 @@ class PhoneController extends AbstractController
 {
 
     /**
-     * @Route("/admin/phones/{token}", name="phone_create")
+     * @Route("/admin/phone", name="phone_create", methods={"POST"})
      */
-    public function createAction($token, Manager $manager, Content $content, Token $tokenVerify, Message $message)
+    public function phoneCreate(PhoneManager $phoneManager)
     {
-        $tokenVerify->verify($token);
+        $data = $phoneManager->getData();
 
-        $phone = $content->getData('phone');
-
-        $phone->setDateCreated(new \DateTime());
-        $phone->setAvailability(true);
-
-        $manager->persist($phone);
-
-        return $message->addSuccess();
+        $phone = $phoneManager->add($data);
+        
+        return $phoneManager->response($phone);
     }
 
     /**
-     * @Route("/admin/phones/delete/{id}/{token}", name="phone_delete")
+     * @Route("/admin/phone", name="phone_delete", methods={"DELETE"})
      */
-    public function phoneDelete(Phone $phone, $token, Token $tokenVerify, Manager $manager, Message $message)
+    public function phoneDelete(PhoneManager $phoneManager, Message $message)
     {
-        $tokenVerify->verify($token);
+        $phone = $phoneManager->getData();
 
-        $manager->remove($phone);
+        $phoneManager->delete($phone);
         
         return $message->removeSuccess();
     }
 
     /**
-     * @Route("/admin/phones/modify/{id}/{token}", name="phone_modify")
+     * @Route("/admin/phone", name="phone_modify", methods={"PUT"})
      */
-    public function phoneModify(Phone $phone, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
+    public function phoneModify(PhoneManager $phoneManager)
     {
-        $tokenVerify->verify($token);
+        $data = $phoneManager->getData();
 
-        $phoneData = $content->getData('phone');
+        $phone = $phoneManager->modify($data);
 
-        $phone->setName($phoneData->getName());
-        $phone->setContent($phoneData->getContent());
-
-        $manager->persist($phone);
-
-        return $message->modifySuccess();
+        return $phoneManager->response($phone);
     }
 
     /**
-     * @Route("/phone/relation/{serialNumber}/{email}/{token}", name="relation")
+     * @Route("/relation",  name="relation_create", methods={"POST"})
      */
-    public function relation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
+    public function relationCreate(PhoneManager $phoneManager, ClientManager $clientManager, Message $message)
     {
-        $tokenVerify->verify($token);
+        $phone = $phoneManager->getPhone();
 
-        $user = $this->getUser();
-        $userClient = $client->getUser();
+        $client = $clientManager->getClient();
 
-        if($user != $userClient)
-        {
-            return $message->RemoveDenied();
-            die;
-        }
+        $availability = $phoneManager->avaibility($phone);
 
-        $availability = $phone->getAvailability();
         if($availability == false){
-            return $message->RelationFail();
+            return $message->noAvailable();
         }
+        
+        /* $newPhone = $phoneManager->addRelation($phone, $client);
 
-        $phone->setAvailability(false);
-        $phone->setClient($client);
-        $count = $client->getNumberOfPhone();
-        $client->setNumberOfPhone(++$count);
-
-        $manager->persist($phone);
-        $manager->persist($client);
+        return $phoneManager->response($newPhone); */
+        $phoneManager->relationAdd($phone, $client);
 
         return $message->modifySuccess();
     }
 
     /**
-     * @Route("/phone/remove-relation/{serialNumber}/{email}/{token}", name="relation_remove")
+     * @Route("/relation", name="relation_delete",  methods={"DELETE"})
      */
-    public function removeRelation(Phone $phone, Client $client, $token, Token $tokenVerify,  Content $content, Manager $manager, Message $message)
+    public function relationDelete(PhoneManager $phoneManager, Message $message)
     {
-        $tokenVerify->verify($token);
-
-        $user = $this->getUser();
+        /* $user = $this->getUser();
         $userClient = $client->getUser();
 
         if($user != $userClient)
         {
             return $message->RemoveDenied();
             die;
-        }
+        } */
+        $phone = $phoneManager->getPhone();
 
-        $phone->setAvailability(true);
-        $phone->setClient(null);
-        $count = $client->getNumberOfPhone();
-        $client->setNumberOfPhone(--$count);
+        $phoneManager->relationDelete($phone);
 
-        $manager->persist($phone);
-        $manager->persist($client);
-
-        return $message->modifySuccess();
+        return $phoneManager->response($phone);
     }
 
     /**
-     * @Route("/phone/all/{page}/{token}", name="phone_all")
+     * @Route("/phone/{page}", name="phone_get",  methods={"GET"})
      */
-    public function showPhoneAll($token, Token $tokenVerify, SerializerInterface $serializer, PhoneRepository $repo, $page)
+    public function showPhone(PhoneManager $phoneManager, $page, PhoneRepository $repo, SerializerInterface $serializer)
     {
-        $tokenVerify->verify($token);
-
-        $nbPhonesParPage = 5;
-
-        $phones = $repo->findAll();
-
-        $phones = $repo->findAllPagineEtTrie($page, $nbPhonesParPage);
+        $phones = $phoneManager->pagination($page);
 
         $data = $serializer->serialize($phones, 'json', ['groups' => 'list']);
 
-        $response = new Response($data);
-
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $phoneManager->responseGroups($data);
     }
 
     /**
-     * @Route("/phone/{serialNumber}/{token}", name="phone_show")
+     * @Route("/phone", name="phone_show", methods={"GET"})
      */
-    public function showPhoneAction($token, Token $tokenVerify, Phone $phone, SerializerInterface $serializer)
+    public function showPhoneAction(PhoneManager $phoneManager, SerializerInterface $serializer)
     {
-        $tokenVerify->verify($token);
+        $phone = $phoneManager->getPhone();
 
         $data = $serializer->serialize($phone, 'json', ['groups' => 'detail']);
 
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $phoneManager->responseGroups($data);
     }
 }

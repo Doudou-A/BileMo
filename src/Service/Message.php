@@ -6,19 +6,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Message
 {
-    public function addSuccess()
-    {
-        return new Response('Ajout effectué avec succès !', Response::HTTP_CREATED);
-    }
-
     public function removeSuccess()
     {
-        return new Response('Suppression effectuée avec succès !', Response::HTTP_CREATED);
+        return new Response('Suppression effectuée avec succès !', Response::HTTP_OK);
     }
 
     public function modifySuccess()
     {
-        return new Response('Modification effectuée avec succès !', Response::HTTP_CREATED);
+        return new Response('Modification effectuée avec succès !', Response::HTTP_OK);
+    }
+
+    public function noAvailable()
+    {
+        return new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_BAD_REQUEST);
     }
 
     public function RelationFail()
