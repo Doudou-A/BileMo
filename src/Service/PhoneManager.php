@@ -90,7 +90,7 @@ class PhoneManager
 
     public function modify($data)
     {
-        $phone = $this->getPhone($data);
+        $phone = $this->getPhone();
 
         $phone->setName($data->getName());
         $phone->setContent($data->getContent());

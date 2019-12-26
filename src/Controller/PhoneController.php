@@ -8,10 +8,11 @@ use App\Service\Token;
 use App\Service\Content;
 use App\Service\Manager;
 use App\Service\Message;
+use App\Service\UserManager;
 use App\Service\PhoneManager;
 use App\Service\PhoneService;
-use App\Repository\PhoneRepository;
 use App\Service\ClientManager;
+use App\Repository\PhoneRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -59,11 +60,19 @@ class PhoneController extends AbstractController
     /**
      * @Route("/relation",  name="relation_create", methods={"POST"})
      */
-    public function relationCreate(PhoneManager $phoneManager, ClientManager $clientManager, Message $message)
+    public function relationCreate(PhoneManager $phoneManager, ClientManager $clientManager, UserManager $userManager, Message $message)
     {
         $phone = $phoneManager->getPhone();
 
+        $user = $this->getUser();
+
         $client = $clientManager->getClient();
+
+        $verify = $userManager->verify($client, $user);
+
+        if($verify == false){
+            return $message->noAccess();
+        }
 
         $availability = $phoneManager->avaibility($phone);
 
@@ -82,17 +91,19 @@ class PhoneController extends AbstractController
     /**
      * @Route("/relation", name="relation_delete",  methods={"DELETE"})
      */
-    public function relationDelete(PhoneManager $phoneManager, Message $message)
+    public function relationDelete(PhoneManager $phoneManager, UserManager $userManager, Message $message)
     {
-        /* $user = $this->getUser();
-        $userClient = $client->getUser();
-
-        if($user != $userClient)
-        {
-            return $message->RemoveDenied();
-            die;
-        } */
         $phone = $phoneManager->getPhone();
+
+        $user = $this->getUser();
+
+        $client = $phone->getClient();
+
+        $verify = $userManager->verify($client, $user);
+
+        if($verify == false){
+            return $message->noAccess();
+        }
 
         $phoneManager->relationDelete($phone);
 

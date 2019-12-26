@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\Message;
+use App\Service\UserManager;
 use App\Service\PhoneManager;
 use App\Service\ClientManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,20 +30,31 @@ class ClientController extends AbstractController
     }
 
     /**
+     * @Route("/client", name="client_modify", methods={"PUT"})
+     */
+    public function clientModify(ClientManager $clientManager)
+    {
+        $data = $clientManager->getData();
+
+        $client = $clientManager->modify($data);
+
+        return $clientManager->response($client);
+    }
+
+    /**
      * @ROUTE("/client", name="delete-client", methods={"DELETE"})
      */
-    public function deleteClient(ClientManager $clientManager, PhoneManager $phoneManager, Message $message)
+    public function deleteClient(ClientManager $clientManager, PhoneManager $phoneManager, UserManager $userManager, Message $message)
     {
-        /* $user = $this->getUser();
-        $userClient = $client->getUser();
+        $user = $this->getUser();
 
-        if($user != $userClient)
-        {
-            return $message->RemoveDenied();
-            die;
-        } */
         $client = $clientManager->getClient();
 
+        $verify = $userManager->verify($client, $user);
+
+        if($verify == false){
+            return $message->noAccess();
+        }
         $phones = $phoneManager->findByClient($client);
 
         foreach ($phones as $phone) {
@@ -71,12 +83,17 @@ class ClientController extends AbstractController
     /**
      * @Route("/client", name="client_show", methods={"GET"})
      */
-    public function showClientAction(ClientManager $clientManager, SerializerInterface $serializer, Request $request)
+    public function showClientAction(ClientManager $clientManager, UserManager $userManager, SerializerInterface $serializer, Message $message)
     {
-        $request = $request->headers->get('Authorization');
-        dd($request);
+        $user = $this->getUser();
 
         $client = $clientManager->getClient();
+
+        $verify = $userManager->verify($client, $user);
+
+        if($verify == false){
+            return $message->noAccess();
+        }
 
         $data = $serializer->serialize($client, 'json', ['groups' => 'detail']);
 

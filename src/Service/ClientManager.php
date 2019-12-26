@@ -94,6 +94,18 @@ class ClientManager
         $this->manager->flush();
     }
 
+    public function modify($data)
+    {
+        $client = $this->getClient();
+
+        $client->setName($data->getName());
+        $client->setFirstName($data->getFirstName());
+
+        $this->persist($client);
+
+        return $client;
+    }
+
     public function remove($entity)
     {
         $this->manager->remove($entity);

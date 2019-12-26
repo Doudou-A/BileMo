@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Entity\Phone;
+use Firebase\JWT\JWT;
 use App\Service\ClientManager;
 use App\Repository\UserRepository;
 use App\Repository\PhoneRepository;
@@ -81,6 +82,16 @@ class UserManager
 
         return $user[0];
     }
+/* 
+    public function getUserConnected()
+    {
+
+        $request = $this->request->headers->get('Authorization');
+
+        $user = $this->decoded($request);
+
+        return $user;
+    } */
 
     public function persist($entity)
     {
@@ -110,6 +121,18 @@ class UserManager
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'view']);
 
         return $data;
+    }
+
+    public function verify($client, $user)
+    {
+        $userClient = $client->getUser();
+
+        if($user != $userClient)
+        {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 
