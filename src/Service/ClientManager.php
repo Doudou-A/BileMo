@@ -25,8 +25,10 @@ class ClientManager
         $this->serializer = $serializer;
     }
 
-    public function add($client, $user)
+    public function add($user)
     {
+        $client = $this->getData();
+
         $client->setDateCreated(new \DateTime());
         $client->setNumberOfPhone(0);
         $client->setUser($user);
@@ -94,12 +96,19 @@ class ClientManager
         $this->manager->flush();
     }
 
-    public function modify($data)
+    public function modify($client)
     {
-        $client = $this->getClient();
+        $data = $this->getData();
 
-        $client->setName($data->getName());
-        $client->setFirstName($data->getFirstName());
+        $name = $data->getName();
+        $firstName = $data->getFirstName();
+
+        if ($name != null) {
+            $client->setName($name);
+        } 
+        if ($firstName != null) {
+            $client->setFirstName($firstName);
+        }
 
         $this->persist($client);
 

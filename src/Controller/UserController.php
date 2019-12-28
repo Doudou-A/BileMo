@@ -2,19 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Service\Token;
-use App\Service\Content;
-use App\Service\Manager;
 use App\Service\Message;
-use App\Service\AddEntity;
 use App\Service\UserManager;
-use App\Repository\PhoneRepository;
-use App\Repository\ClientRepository;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Controller\TokenAuthenticatedController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class UserController extends AbstractController
+class UserController extends AbstractController implements TokenAuthenticatedController
 {
 
     /**
@@ -22,9 +16,25 @@ class UserController extends AbstractController
      */
     public function addUser(UserManager $userManager)
     {
-        $data = $userManager->getData();
+        $user = $userManager->add();
 
-        $user = $userManager->add($data);
+        return $userManager->response($user);
+    }
+
+    /**
+     * @ROUTE("user", name="add_user", methods={"PUT"})
+     */
+    public function modifyUser(UserManager $userManager, Message $message)
+    {
+        $userCo = $this->getUser();
+
+        $verify = $userManager->verify($userCo);
+
+        if($verify == false){
+            return $message->noAccess();
+        }
+
+        $user = $userManager->modify();
 
         return $userManager->response($user);
     }

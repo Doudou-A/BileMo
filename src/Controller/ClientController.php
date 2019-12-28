@@ -6,37 +6,38 @@ use App\Service\Message;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
 use App\Service\ClientManager;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Controller\TokenAuthenticatedController;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class ClientController extends AbstractController
+class ClientController extends AbstractController implements TokenAuthenticatedController
 {
     
     /**
      * @ROUTE("/client", name="add_client", methods={"POST"})
      */
-    public function addClient(ClientManager $clientManager, Message $message)
+    public function addClient(ClientManager $clientManager, SerializerInterface $serializer, Message $message)
     {
         $user = $this->getUser();
 
-        $data = $clientManager->getData();
+        $client = $clientManager->add($user);
+        
+        $data = $serializer->serialize($client, 'json', ['groups' => 'detail']);
 
-        $client = $clientManager->add($data, $user);
-
-        return $message->removeSuccess();
+        return $clientManager->responseGroups($data);
     }
 
     /**
      * @Route("/client", name="client_modify", methods={"PUT"})
      */
-    public function clientModify(ClientManager $clientManager)
+    public function clientModify(ClientManager $clientManager, UserManager $userManager, Message $message)
     {
-        $data = $clientManager->getData();
+        $user = $this->getUser();
 
-        $client = $clientManager->modify($data);
+        $client = $userManager->verify($user);
+
+        $client = $clientManager->modify($client);
 
         return $clientManager->response($client);
     }
@@ -48,13 +49,8 @@ class ClientController extends AbstractController
     {
         $user = $this->getUser();
 
-        $client = $clientManager->getClient();
+        $client = $userManager->verify($user);
 
-        $verify = $userManager->verify($client, $user);
-
-        if($verify == false){
-            return $message->noAccess();
-        }
         $phones = $phoneManager->findByClient($client);
 
         foreach ($phones as $phone) {
@@ -83,17 +79,11 @@ class ClientController extends AbstractController
     /**
      * @Route("/client", name="client_show", methods={"GET"})
      */
-    public function showClientAction(ClientManager $clientManager, UserManager $userManager, SerializerInterface $serializer, Message $message)
+    public function showClientAction(ClientManager $clientManager, UserManager $userManager, SerializerInterface $serializer)
     {
         $user = $this->getUser();
 
-        $client = $clientManager->getClient();
-
-        $verify = $userManager->verify($client, $user);
-
-        if($verify == false){
-            return $message->noAccess();
-        }
+        $client = $userManager->verify($user);
 
         $data = $serializer->serialize($client, 'json', ['groups' => 'detail']);
 

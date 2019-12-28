@@ -2,23 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\Phone;
-use App\Entity\Client;
-use App\Service\Token;
-use App\Service\Content;
-use App\Service\Manager;
 use App\Service\Message;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
-use App\Service\PhoneService;
 use App\Service\ClientManager;
 use App\Repository\PhoneRepository;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Controller\TokenAuthenticatedController;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class PhoneController extends AbstractController
+class PhoneController extends AbstractController implements TokenAuthenticatedController
 {
 
     /**
@@ -48,13 +42,11 @@ class PhoneController extends AbstractController
     /**
      * @Route("/admin/phone", name="phone_modify", methods={"PUT"})
      */
-    public function phoneModify(PhoneManager $phoneManager)
+    public function phoneModify(PhoneManager $phoneManager, SerializerInterface $serializer)
     {
-        $data = $phoneManager->getData();
+        $phone = $phoneManager->modify();
 
-        $phone = $phoneManager->modify($data);
-
-        return $phoneManager->response($phone);
+        return $phoneManager->responseGroups($phone, 'detail');
     }
 
     /**
@@ -62,28 +54,12 @@ class PhoneController extends AbstractController
      */
     public function relationCreate(PhoneManager $phoneManager, ClientManager $clientManager, UserManager $userManager, Message $message)
     {
-        $phone = $phoneManager->getPhone();
 
         $user = $this->getUser();
 
-        $client = $clientManager->getClient();
+        $client = $userManager->verify($user);
 
-        $verify = $userManager->verify($client, $user);
-
-        if($verify == false){
-            return $message->noAccess();
-        }
-
-        $availability = $phoneManager->avaibility($phone);
-
-        if($availability == false){
-            return $message->noAvailable();
-        }
-        
-        /* $newPhone = $phoneManager->addRelation($phone, $client);
-
-        return $phoneManager->response($newPhone); */
-        $phoneManager->relationAdd($phone, $client);
+        $phoneManager->relationAdd($client);
 
         return $message->modifySuccess();
     }
@@ -93,19 +69,11 @@ class PhoneController extends AbstractController
      */
     public function relationDelete(PhoneManager $phoneManager, UserManager $userManager, Message $message)
     {
-        $phone = $phoneManager->getPhone();
-
         $user = $this->getUser();
 
-        $client = $phone->getClient();
+        $userManager->verify($user);
 
-        $verify = $userManager->verify($client, $user);
-
-        if($verify == false){
-            return $message->noAccess();
-        }
-
-        $phoneManager->relationDelete($phone);
+        $phone = $phoneManager->relationDelete();
 
         return $phoneManager->response($phone);
     }

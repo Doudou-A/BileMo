@@ -43,7 +43,10 @@ class PhoneManager
 
         $availability = $phone->getAvailability();
 
-        return $availability;
+        if($availability == false)
+        {
+            exit(new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_UNAUTHORIZED));
+        }
     }
 
     public function delete($data)
@@ -88,12 +91,20 @@ class PhoneManager
         return $phone[0];
     }
 
-    public function modify($data)
+    public function modify()
     {
+        $data = $this->getData();
         $phone = $this->getPhone();
 
-        $phone->setName($data->getName());
-        $phone->setContent($data->getContent());
+        $name = $data->getName();
+        $content = $data->getContent();
+
+        if ($name != null) {
+            $phone->setName($name);
+        } 
+        if ($content != null) {
+            $phone->setContent($content);
+        }
 
         $this->persist($phone);
 
@@ -115,8 +126,12 @@ class PhoneManager
         $this->manager->flush();
     }
 
-    public function relationAdd($phone, $client)
+    public function relationAdd($client)
     {
+        $phone = $this->getPhone();
+
+        $this->avaibility($phone);
+
         $phone->setAvailability(false);
         $phone->setClient($client);
 
@@ -127,8 +142,10 @@ class PhoneManager
         return $phone;
     }
 
-    public function relationDelete($phone)
+    public function relationDelete()
     {
+        $phone = $this->getPhone();
+
         $client = $phone->getClient();
 
         $phone->setAvailability(true);
@@ -159,20 +176,21 @@ class PhoneManager
     }
 
 
-    public function responseGroups($data)
+    public function responseGroups($phone, $groups)
     {
+        $data = $this->serializer->serialize($phone, 'json', ['groups' => $groups]);
+
         $response = new Response($data);
 
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
-    
+
     public function serialize($phone)
     {
         $data = $this->serializer->serialize($phone, 'json');
 
         return $data;
     }
-
 }

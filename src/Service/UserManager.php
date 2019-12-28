@@ -35,8 +35,10 @@ class UserManager
         $this->manager = $manager;
     }
 
-    public function add($user)
+    public function add()
     {
+        $user = $this->getData();
+
         $hash = $this->encoder->encodePassword($user, $user->getPassword());
 
         $user->setDateCreated(new \DateTime());
@@ -93,6 +95,31 @@ class UserManager
         return $user;
     } */
 
+    public function modify()
+    {
+        $user = $this->getUser();
+        $data = $this->getData();
+
+        $name = $data->getName();
+        $firstName = $data->getFirstName();
+        $password = $data->getPassword();
+
+        if ($name != null) {
+            $user->setName($name);
+        } 
+        if ($firstName != null) {
+            $user->setFirstName($firstName);
+        } 
+        if ($password != null) {
+            $hash = $this->encoder->encodePassword($user, $password);
+            $user->setPassword($hash);
+        }
+
+        $this->persist($user);
+
+        return $user;
+    }
+
     public function persist($entity)
     {
         $this->manager->persist($entity);
@@ -123,16 +150,18 @@ class UserManager
         return $data;
     }
 
-    public function verify($client, $user)
+    public function verify($userCo)
     {
-        $userClient = $client->getUser();
+        $client = $this->clientManager->getClient();
 
-        if($user != $userClient)
+        $user = $client->getUser();
+
+        if($user != $userCo)
         {
-            return false;
-        } else {
-            return true;
-        }
+            exit(new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN));
+        } 
+
+        return $client;
     }
 }
 
