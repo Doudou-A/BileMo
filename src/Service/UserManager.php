@@ -163,5 +163,17 @@ class UserManager
 
         return $client;
     }
+
+    public function verifyUser($userCo)
+    {
+        $user = $this->getUser();
+
+        if($user != $userCo)
+        {
+            exit(new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN));
+        } 
+
+        return $user;
+    }
 }
 

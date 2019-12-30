@@ -5,12 +5,10 @@ namespace App\Controller;
 use App\Service\Message;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
-use App\Service\ClientManager;
-use App\Repository\PhoneRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Swagger\Annotations as SWG;
 
 class PhoneController extends AbstractController implements TokenAuthenticatedController
 {
@@ -24,7 +22,7 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
 
         $phone = $phoneManager->add($data);
         
-        return $phoneManager->response($phone);
+        return $phoneManager->responseDetail($phone);
     }
 
     /**
@@ -42,17 +40,31 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
     /**
      * @Route("/admin/phone", name="phone_modify", methods={"PUT"})
      */
-    public function phoneModify(PhoneManager $phoneManager, SerializerInterface $serializer)
+    public function phoneModify(PhoneManager $phoneManager)
     {
         $phone = $phoneManager->modify();
 
-        return $phoneManager->responseGroups($phone, 'detail');
+        return $phoneManager->responseDetail($phone);
     }
 
     /**
      * @Route("/relation",  name="relation_create", methods={"POST"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
+     * )
+     * @SWG\Parameter(
+     *     name="email",
+     *     in="query",
+     *     type="string"
+     * )
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="query",
+     *     type="integer"
+     * )
      */
-    public function relationCreate(PhoneManager $phoneManager, ClientManager $clientManager, UserManager $userManager, Message $message)
+    public function relationCreate(PhoneManager $phoneManager, UserManager $userManager, Message $message)
     {
 
         $user = $this->getUser();
@@ -66,8 +78,22 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
 
     /**
      * @Route("/relation", name="relation_delete",  methods={"DELETE"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
+     * )
+     * @SWG\Parameter(
+     *     name="email",
+     *     in="query",
+     *     type="string"
+     * )
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="query",
+     *     type="integer"
+     * )
      */
-    public function relationDelete(PhoneManager $phoneManager, UserManager $userManager, Message $message)
+    public function relationDelete(PhoneManager $phoneManager, UserManager $userManager)
     {
         $user = $this->getUser();
 
@@ -75,30 +101,36 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
 
         $phone = $phoneManager->relationDelete();
 
-        return $phoneManager->response($phone);
+        return $phoneManager->responseDetail($phone);
     }
 
     /**
      * @Route("/phone/{page}", name="phone_get",  methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Show all of phone available",
+     * )
+     * @SWG\Parameter(
+     *     name="page on URL",
+     *     in="query",
+     *     type="integer"
+     * )
      */
-    public function showPhone(PhoneManager $phoneManager, $page, PhoneRepository $repo, SerializerInterface $serializer)
+    public function showPhone(PhoneManager $phoneManager, $page)
     {
         $phones = $phoneManager->pagination($page);
 
-        $data = $serializer->serialize($phones, 'json', ['groups' => 'list']);
-
-        return $phoneManager->responseGroups($data);
+        return $phoneManager->responseList($phones);
     }
 
     /**
      * @Route("/phone", name="phone_show", methods={"GET"})
      */
-    public function showPhoneAction(PhoneManager $phoneManager, SerializerInterface $serializer)
+    public function showPhoneAction(PhoneManager $phoneManager)
     {
+
         $phone = $phoneManager->getPhone();
 
-        $data = $serializer->serialize($phone, 'json', ['groups' => 'detail']);
-
-        return $phoneManager->responseGroups($data);
+        return $phoneManager->responseDetail($phone);
     }
 }

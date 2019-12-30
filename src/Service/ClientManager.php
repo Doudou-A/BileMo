@@ -121,9 +121,9 @@ class ClientManager
         $this->manager->flush();
     }
 
-    public function response($entity)
+    public function responseDetail($client)
     {
-        $data = $this->serialize($entity, 'json');
+        $data = $this->serializer->serialize($client, 'json', ['groups' => 'detail']);
 
         $response = new Response($data);
 
@@ -132,19 +132,14 @@ class ClientManager
         return $response;
     }
 
-    public function responseGroups($data)
+    public function responseList($client)
     {
+        $data = $this->serializer->serialize($client, 'json', ['groups' => 'list']);
+
         $response = new Response($data);
 
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
-    }
-
-    public function serialize($client)
-    {
-        $data = $this->serializer->serialize($client, 'json');
-
-        return $data;
     }
 }

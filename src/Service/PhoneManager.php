@@ -72,7 +72,7 @@ class PhoneManager
     }
 
     public function getData()
-    {
+    {        
         $data = $this->request->getContent();
 
         $data = $this->serializer->deserialize($data, Phone::class, 'json');
@@ -85,7 +85,7 @@ class PhoneManager
         $data = $this->getData();
 
         $serialNumber = $data->getSerialNumber();
-
+        
         $phone = $this->repo->findBySerialNumber($serialNumber);
 
         return $phone[0];
@@ -164,9 +164,9 @@ class PhoneManager
         $this->manager->flush();
     }
 
-    public function response($entity)
+    public function responseDetail($phone)
     {
-        $data = $this->serialize($entity, 'json');
+        $data = $this->serializer->serialize($phone, 'json', ['groups' => 'detail']);
 
         $response = new Response($data);
 
@@ -175,22 +175,14 @@ class PhoneManager
         return $response;
     }
 
-
-    public function responseGroups($phone, $groups)
+    public function responseList($phone)
     {
-        $data = $this->serializer->serialize($phone, 'json', ['groups' => $groups]);
+        $data = $this->serializer->serialize($phone, 'json', ['groups' => 'list']);
 
         $response = new Response($data);
 
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
-    }
-
-    public function serialize($phone)
-    {
-        $data = $this->serializer->serialize($phone, 'json');
-
-        return $data;
     }
 }
