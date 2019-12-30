@@ -3,11 +3,8 @@
 namespace App\Service;
 
 use App\Entity\User;
-use App\Entity\Phone;
-use Firebase\JWT\JWT;
 use App\Service\ClientManager;
 use App\Repository\UserRepository;
-use App\Repository\PhoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -84,16 +81,6 @@ class UserManager
 
         return $user[0];
     }
-/* 
-    public function getUserConnected()
-    {
-
-        $request = $this->request->headers->get('Authorization');
-
-        $user = $this->decoded($request);
-
-        return $user;
-    } */
 
     public function modify()
     {
