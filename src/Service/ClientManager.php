@@ -25,8 +25,10 @@ class ClientManager
         $this->serializer = $serializer;
     }
 
-    public function add($client, $user)
+    public function add($user)
     {
+        $client = $this->getData();
+
         $client->setDateCreated(new \DateTime());
         $client->setNumberOfPhone(0);
         $client->setUser($user);
@@ -94,15 +96,34 @@ class ClientManager
         $this->manager->flush();
     }
 
+    public function modify($client)
+    {
+        $data = $this->getData();
+
+        $name = $data->getName();
+        $firstName = $data->getFirstName();
+
+        if ($name != null) {
+            $client->setName($name);
+        } 
+        if ($firstName != null) {
+            $client->setFirstName($firstName);
+        }
+
+        $this->persist($client);
+
+        return $client;
+    }
+
     public function remove($entity)
     {
         $this->manager->remove($entity);
         $this->manager->flush();
     }
 
-    public function response($entity)
+    public function responseDetail($client)
     {
-        $data = $this->serialize($entity, 'json');
+        $data = $this->serializer->serialize($client, 'json', ['groups' => 'detail']);
 
         $response = new Response($data);
 
@@ -111,19 +132,14 @@ class ClientManager
         return $response;
     }
 
-    public function responseGroups($data)
+    public function responseList($client)
     {
+        $data = $this->serializer->serialize($client, 'json', ['groups' => 'list']);
+
         $response = new Response($data);
 
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
-    }
-
-    public function serialize($client)
-    {
-        $data = $this->serializer->serialize($client, 'json');
-
-        return $data;
     }
 }

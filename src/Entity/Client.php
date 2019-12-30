@@ -22,6 +22,7 @@ class Client
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"detail"})
      */
     private $id;
 
@@ -53,12 +54,14 @@ class Client
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="clients")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"detail"})
      */
     private $user;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Phone", mappedBy="client")
      * @ORM\JoinColumn(onDelete="SET NULL")
+     * @Groups({"detail"})
      */
     private $phones;
 

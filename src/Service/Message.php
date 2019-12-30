@@ -21,6 +21,11 @@ class Message
         return new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_BAD_REQUEST);
     }
 
+    public function noAccess()
+    {
+        return new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+    }
+
     public function RelationFail()
     {
         return new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_CREATED);

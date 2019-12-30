@@ -2,22 +2,15 @@
 
 namespace App\Controller;
 
-use App\Entity\Phone;
-use App\Entity\Client;
-use App\Service\Token;
-use App\Service\Content;
-use App\Service\Manager;
 use App\Service\Message;
+use App\Service\UserManager;
 use App\Service\PhoneManager;
-use App\Service\PhoneService;
-use App\Repository\PhoneRepository;
-use App\Service\ClientManager;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use App\Controller\TokenAuthenticatedController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Swagger\Annotations as SWG;
 
-class PhoneController extends AbstractController
+class PhoneController extends AbstractController implements TokenAuthenticatedController
 {
 
     /**
@@ -29,7 +22,7 @@ class PhoneController extends AbstractController
 
         $phone = $phoneManager->add($data);
         
-        return $phoneManager->response($phone);
+        return $phoneManager->responseDetail($phone);
     }
 
     /**
@@ -49,77 +42,95 @@ class PhoneController extends AbstractController
      */
     public function phoneModify(PhoneManager $phoneManager)
     {
-        $data = $phoneManager->getData();
+        $phone = $phoneManager->modify();
 
-        $phone = $phoneManager->modify($data);
-
-        return $phoneManager->response($phone);
+        return $phoneManager->responseDetail($phone);
     }
 
     /**
      * @Route("/relation",  name="relation_create", methods={"POST"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
+     * )
+     * @SWG\Parameter(
+     *     name="email",
+     *     in="query",
+     *     type="string"
+     * )
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="query",
+     *     type="integer"
+     * )
      */
-    public function relationCreate(PhoneManager $phoneManager, ClientManager $clientManager, Message $message)
+    public function relationCreate(PhoneManager $phoneManager, UserManager $userManager, Message $message)
     {
-        $phone = $phoneManager->getPhone();
 
-        $client = $clientManager->getClient();
+        $user = $this->getUser();
 
-        $availability = $phoneManager->avaibility($phone);
+        $client = $userManager->verify($user);
 
-        if($availability == false){
-            return $message->noAvailable();
-        }
-        
-        /* $newPhone = $phoneManager->addRelation($phone, $client);
-
-        return $phoneManager->response($newPhone); */
-        $phoneManager->relationAdd($phone, $client);
+        $phoneManager->relationAdd($client);
 
         return $message->modifySuccess();
     }
 
     /**
      * @Route("/relation", name="relation_delete",  methods={"DELETE"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
+     * )
+     * @SWG\Parameter(
+     *     name="email",
+     *     in="query",
+     *     type="string"
+     * )
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="query",
+     *     type="integer"
+     * )
      */
-    public function relationDelete(PhoneManager $phoneManager, Message $message)
+    public function relationDelete(PhoneManager $phoneManager, UserManager $userManager)
     {
-        /* $user = $this->getUser();
-        $userClient = $client->getUser();
+        $user = $this->getUser();
 
-        if($user != $userClient)
-        {
-            return $message->RemoveDenied();
-            die;
-        } */
-        $phone = $phoneManager->getPhone();
+        $userManager->verify($user);
 
-        $phoneManager->relationDelete($phone);
+        $phone = $phoneManager->relationDelete();
 
-        return $phoneManager->response($phone);
+        return $phoneManager->responseDetail($phone);
     }
 
     /**
      * @Route("/phone/{page}", name="phone_get",  methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Show all of phone available",
+     * )
+     * @SWG\Parameter(
+     *     name="page on URL",
+     *     in="query",
+     *     type="integer"
+     * )
      */
-    public function showPhone(PhoneManager $phoneManager, $page, PhoneRepository $repo, SerializerInterface $serializer)
+    public function showPhone(PhoneManager $phoneManager, $page)
     {
         $phones = $phoneManager->pagination($page);
 
-        $data = $serializer->serialize($phones, 'json', ['groups' => 'list']);
-
-        return $phoneManager->responseGroups($data);
+        return $phoneManager->responseList($phones);
     }
 
     /**
      * @Route("/phone", name="phone_show", methods={"GET"})
      */
-    public function showPhoneAction(PhoneManager $phoneManager, SerializerInterface $serializer)
+    public function showPhoneAction(PhoneManager $phoneManager)
     {
+
         $phone = $phoneManager->getPhone();
 
-        $data = $serializer->serialize($phone, 'json', ['groups' => 'detail']);
-
-        return $phoneManager->responseGroups($data);
+        return $phoneManager->responseDetail($phone);
     }
 }

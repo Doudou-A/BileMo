@@ -43,7 +43,10 @@ class PhoneManager
 
         $availability = $phone->getAvailability();
 
-        return $availability;
+        if($availability == false)
+        {
+            exit(new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_UNAUTHORIZED));
+        }
     }
 
     public function delete($data)
@@ -69,7 +72,7 @@ class PhoneManager
     }
 
     public function getData()
-    {
+    {        
         $data = $this->request->getContent();
 
         $data = $this->serializer->deserialize($data, Phone::class, 'json');
@@ -82,18 +85,26 @@ class PhoneManager
         $data = $this->getData();
 
         $serialNumber = $data->getSerialNumber();
-
+        
         $phone = $this->repo->findBySerialNumber($serialNumber);
 
         return $phone[0];
     }
 
-    public function modify($data)
+    public function modify()
     {
-        $phone = $this->getPhone($data);
+        $data = $this->getData();
+        $phone = $this->getPhone();
 
-        $phone->setName($data->getName());
-        $phone->setContent($data->getContent());
+        $name = $data->getName();
+        $content = $data->getContent();
+
+        if ($name != null) {
+            $phone->setName($name);
+        } 
+        if ($content != null) {
+            $phone->setContent($content);
+        }
 
         $this->persist($phone);
 
@@ -115,8 +126,12 @@ class PhoneManager
         $this->manager->flush();
     }
 
-    public function relationAdd($phone, $client)
+    public function relationAdd($client)
     {
+        $phone = $this->getPhone();
+
+        $this->avaibility($phone);
+
         $phone->setAvailability(false);
         $phone->setClient($client);
 
@@ -127,8 +142,10 @@ class PhoneManager
         return $phone;
     }
 
-    public function relationDelete($phone)
+    public function relationDelete()
     {
+        $phone = $this->getPhone();
+
         $client = $phone->getClient();
 
         $phone->setAvailability(true);
@@ -147,9 +164,9 @@ class PhoneManager
         $this->manager->flush();
     }
 
-    public function response($entity)
+    public function responseDetail($phone)
     {
-        $data = $this->serialize($entity, 'json');
+        $data = $this->serializer->serialize($phone, 'json', ['groups' => 'detail']);
 
         $response = new Response($data);
 
@@ -158,21 +175,14 @@ class PhoneManager
         return $response;
     }
 
-
-    public function responseGroups($data)
+    public function responseList($phone)
     {
+        $data = $this->serializer->serialize($phone, 'json', ['groups' => 'list']);
+
         $response = new Response($data);
 
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
-    
-    public function serialize($phone)
-    {
-        $data = $this->serializer->serialize($phone, 'json');
-
-        return $data;
-    }
-
 }

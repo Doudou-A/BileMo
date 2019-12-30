@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Client;
 use InvalidArgumentException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -25,13 +26,11 @@ class ClientRepository extends ServiceEntityRepository
     public function findAllPagineEtTrie($page, $nbMaxParPage, $user)
     {
         if (!is_numeric($page)) {
-            throw new InvalidArgumentException(
-                'La valeur de l\'argument $page est incorrecte (valeur : ' . $page . ').'
-            );
+                exit(new Response('La valeur de l\'argument $page est incorrecte (valeur : ' . $page . ').', Response::HTTP_NOT_FOUND));
         }
 
         if ($page < 1) {
-            throw new NotFoundHttpException('La page demandée n\'existe pas');
+            exit(new Response('La page demandée n\'existe pas.', Response::HTTP_NOT_FOUND));
         }
 
         if (!is_numeric($nbMaxParPage)) {
@@ -51,7 +50,7 @@ class ClientRepository extends ServiceEntityRepository
         $paginator = new Paginator($query);
 
         if ( ($paginator->count() <= $premierResultat) && $page != 1) {
-            throw new NotFoundHttpException('La page demandée n\'existe pas.'); // page 404, sauf pour la première page
+            exit(new Response('La page demandée n\'existe pas.', Response::HTTP_NOT_FOUND));
         }
 
         return $paginator;

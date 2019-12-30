@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Entity\Phone;
+use Firebase\JWT\JWT;
 use App\Service\ClientManager;
 use App\Repository\UserRepository;
 use App\Repository\PhoneRepository;
@@ -34,8 +35,10 @@ class UserManager
         $this->manager = $manager;
     }
 
-    public function add($user)
+    public function add()
     {
+        $user = $this->getData();
+
         $hash = $this->encoder->encodePassword($user, $user->getPassword());
 
         $user->setDateCreated(new \DateTime());
@@ -81,6 +84,41 @@ class UserManager
 
         return $user[0];
     }
+/* 
+    public function getUserConnected()
+    {
+
+        $request = $this->request->headers->get('Authorization');
+
+        $user = $this->decoded($request);
+
+        return $user;
+    } */
+
+    public function modify()
+    {
+        $user = $this->getUser();
+        $data = $this->getData();
+
+        $name = $data->getName();
+        $firstName = $data->getFirstName();
+        $password = $data->getPassword();
+
+        if ($name != null) {
+            $user->setName($name);
+        } 
+        if ($firstName != null) {
+            $user->setFirstName($firstName);
+        } 
+        if ($password != null) {
+            $hash = $this->encoder->encodePassword($user, $password);
+            $user->setPassword($hash);
+        }
+
+        $this->persist($user);
+
+        return $user;
+    }
 
     public function persist($entity)
     {
@@ -110,6 +148,32 @@ class UserManager
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'view']);
 
         return $data;
+    }
+
+    public function verify($userCo)
+    {
+        $client = $this->clientManager->getClient();
+
+        $user = $client->getUser();
+
+        if($user != $userCo)
+        {
+            exit(new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN));
+        } 
+
+        return $client;
+    }
+
+    public function verifyUser($userCo)
+    {
+        $user = $this->getUser();
+
+        if($user != $userCo)
+        {
+            exit(new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN));
+        } 
+
+        return $user;
     }
 }
 
