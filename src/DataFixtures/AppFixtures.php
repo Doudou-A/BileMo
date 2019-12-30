@@ -4,8 +4,6 @@ use Faker\Factory;
 use App\Entity\User;
 use App\Entity\Phone;
 use App\Entity\Client;
-use App\Repository\PhoneRepository;
-use App\Repository\ClientRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -19,14 +17,10 @@ class AppFixtures extends Fixture
      * 
      */
     private $encoder;
-    private $repoClient;
-    private $repoPhone;
 
-    public function __construct(UserPAsswordEncoderInterface $encoder, ClientRepository $repoClient, PhoneRepository $repoPhone)
+    public function __construct(UserPAsswordEncoderInterface $encoder)
     {
         $this->encoder = $encoder;
-        $this->repoClient = $repoClient;
-        $this->repoPhone = $repoPhone;
     }
     
     public function load(ObjectManager $manager)
@@ -113,41 +107,7 @@ class AppFixtures extends Fixture
             $clients[] = $client;
             
         }
-        /* 
-        for($l = 0; $l < 96; $l++){
-            $media = new Media();
-            $media ->setFigure($faker->randomElement($figures))
-                    ->setUrl($faker->randomElement($UrlImage))
-                    ->setType('image');
-            
-                  $manager->persist($media);
-            
-        }
-        for($m = 0; $m < 365; $m++){
-            $comment = new Comment();
-            $comment ->setFigure($faker->randomElement($figures))
-                     ->setUser($faker->randomElement($users))
-                     ->setContent($faker->sentence)
-                     ->setDateCreated($faker->dateTime);
-            
-            $manager->persist($comment);
-            
-        } */
 
         $manager->flush();
-        /* 
-
-        for($n = 0; $n < 200; $n++){
-            $phone = $this->repoPhone->find($n);
-            $client = $phone->getClient();
-            if($client != null)
-            {
-                $phone -> setAvailability(false);
-            }
-            
-            $manager->persist($phone);
-            $phones[] = $phone;
-        }  */
-
     }
 }
