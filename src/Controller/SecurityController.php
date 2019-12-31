@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use Firebase\JWT\JWT;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Swagger\Annotations as SWG;
 
 class SecurityController extends AbstractController
 {
@@ -32,7 +32,7 @@ class SecurityController extends AbstractController
     public function login()
     {
         $user = $this->getUser();
-
+    dd($user);
         $key = "token";
         $payload = array(
             'Id' => $user->getId(),
@@ -52,7 +52,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/logout", name="security_logout", methods={"POST"})
+     * @Route("/logout", name="security_logout", methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="Logout of your account"
@@ -64,11 +64,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/logout-message", name="logout-message" ,methods={"GET"})
-     * @SWG\Response(
-     *     response=200,
-     *     description="Message display after your logout",
-     * )
+     * @Route("/message-logout", name="logout-message")
      */
     public function logoutMessage()
     {
