@@ -32,7 +32,7 @@ class SecurityController extends AbstractController
     public function login()
     {
         $user = $this->getUser();
-    dd($user);
+
         $key = "token";
         $payload = array(
             'Id' => $user->getId(),
@@ -52,7 +52,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/logout", name="security_logout", methods={"GET"})
+     * @Route("/logout", name="security_logout", methods={"POST"})
      * @SWG\Response(
      *     response=200,
      *     description="Logout of your account"

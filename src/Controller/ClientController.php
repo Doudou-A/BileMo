@@ -21,7 +21,7 @@ class ClientController extends AbstractController implements TokenAuthenticatedC
      *     description="add a client",
      * )
      * @SWG\Parameter(
-     *     name="name, Email",
+     *     name="name",
      *     in="query",
      *     type="string"
      * )
@@ -52,7 +52,7 @@ class ClientController extends AbstractController implements TokenAuthenticatedC
      *     description="Modify the name and/or the firstName. You can't change the email but you must to post him.",
      * )
      * @SWG\Parameter(
-     *     name="name, Email",
+     *     name="name",
      *     in="query",
      *     type="string"
      * )

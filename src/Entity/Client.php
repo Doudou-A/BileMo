@@ -54,7 +54,6 @@ class Client
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="clients")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"detail"})
      */
     private $user;
 

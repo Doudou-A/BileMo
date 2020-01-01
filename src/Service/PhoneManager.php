@@ -113,7 +113,7 @@ class PhoneManager
 
     public function pagination($page)
     {
-        $nbPhonesParPage = 5;
+        $nbPhonesParPage = 15;
 
         $phones = $this->repo->findAllPagineEtTrie($page, $nbPhonesParPage);
 
