@@ -28,9 +28,7 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
      */
     public function phoneDelete(PhoneManager $phoneManager, Message $message)
     {
-        $phone = $phoneManager->getData();
-
-        $phoneManager->delete($phone);
+        $phoneManager->delete();
         
         return $message->removeSuccess();
     }

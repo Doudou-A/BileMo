@@ -51,8 +51,9 @@ class PhoneManager
         }
     }
 
-    public function delete($data)
+    public function delete()
     {
+        $data = $this->getData();
         $phone = $this->getPhone($data);
 
         $this->remove($phone);
