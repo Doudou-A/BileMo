@@ -27,8 +27,10 @@ class PhoneManager
         $this->manager = $manager;
     }
 
-    public function add($phone)
+    public function add()
     {
+        $phone = $this->getData();
+
         $phone->setDateCreated(new \DateTime());
         $phone->setAvailability(true);
 

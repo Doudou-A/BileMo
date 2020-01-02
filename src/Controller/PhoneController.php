@@ -18,9 +18,7 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
      */
     public function phoneCreate(PhoneManager $phoneManager)
     {
-        $data = $phoneManager->getData();
-
-        $phone = $phoneManager->add($data);
+        $phone = $phoneManager->add();
         
         return $phoneManager->responseDetail($phone);
     }
