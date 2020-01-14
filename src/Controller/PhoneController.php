@@ -5,16 +5,18 @@ namespace App\Controller;
 use App\Service\Message;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
+use App\Service\ClientManager;
+use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Swagger\Annotations as SWG;
 
 class PhoneController extends AbstractController implements TokenAuthenticatedController
 {
 
     /**
-     * @Route("/admin/phone", name="phone_create", methods={"POST"})
+     * @Route("/phone", name="phone_create", methods={"POST"})
      */
     public function phoneCreate(PhoneManager $phoneManager)
     {
@@ -24,17 +26,17 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
     }
 
     /**
-     * @Route("/admin/phone", name="phone_delete", methods={"DELETE"})
+     * @Route("/phone", name="phone_delete", methods={"DELETE"})
      */
-    public function phoneDelete(PhoneManager $phoneManager, Message $message)
+    public function phoneDelete(PhoneManager $phoneManager)
     {
         $phoneManager->delete();
         
-        return $message->removeSuccess();
+        return new Response(Response::HTTP_OK);
     }
 
     /**
-     * @Route("/admin/phone", name="phone_modify", methods={"PUT"})
+     * @Route("/phone", name="phone_modify", methods={"PUT"})
      */
     public function phoneModify(PhoneManager $phoneManager)
     {
@@ -44,7 +46,7 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
     }
 
     /**
-     * @Route("/relation",  name="relation_create", methods={"POST"})
+     * @Route("/phone/client",  name="relation_create", methods={"POST"})
      * @SWG\Response(
      *     response=200,
      *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
@@ -60,20 +62,25 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
      *     type="integer"
      * )
      */
-    public function relationCreate(PhoneManager $phoneManager, UserManager $userManager, Message $message)
+    public function relationCreate(PhoneManager $phoneManager, UserManager $userManager, ClientManager $clientManager)
     {
 
         $user = $this->getUser();
 
         $client = $userManager->verify($user);
 
+        if ($client == null)
+        {
+            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+        }
+
         $phoneManager->relationAdd($client);
 
-        return $message->modifySuccess();
+        return $clientManager->responseList($client);
     }
 
     /**
-     * @Route("/relation", name="relation_delete",  methods={"DELETE"})
+     * @Route("/phone/client", name="relation_delete",  methods={"DELETE"})
      * @SWG\Response(
      *     response=200,
      *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
@@ -93,7 +100,12 @@ class PhoneController extends AbstractController implements TokenAuthenticatedCo
     {
         $user = $this->getUser();
 
-        $userManager->verify($user);
+        $verify = $userManager->verify($user);
+
+        if ($verify == null)
+        {
+            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+        }
 
         $phone = $phoneManager->relationDelete();
 

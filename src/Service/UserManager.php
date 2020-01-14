@@ -145,7 +145,8 @@ class UserManager
 
         if($user != $userCo)
         {
-            exit(new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN));
+            $client == null;
+            return $client;
         } 
 
         return $client;
@@ -157,7 +158,7 @@ class UserManager
 
         if($user != $userCo)
         {
-            exit(new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN));
+            $user == null;
         } 
 
         return $user;

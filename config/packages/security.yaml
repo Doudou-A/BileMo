@@ -47,6 +47,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/client, roles: ROLE_USER }
-        - { path: ^/phone, roles: ROLE_USER }
+        - { path: ^/phone, roles: ROLE_ADMIN, methods: [POST, PUT, DELETE] }
+        - { path: ^/phone, roles: ROLE_USER, methods: [GET] }
+        - { path: ^/user, roles: ROLE_ADMIN, methods: [POST, DELETE]}
+        - { path: ^/user, roles: ROLE_ADMIN, methods: [PUT]}

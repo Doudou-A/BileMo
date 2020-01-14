@@ -56,6 +56,10 @@ class PhoneManager
         $data = $this->getData();
         $phone = $this->getPhone($data);
 
+        $client = $phone->getClient();
+
+        $this->clientManager->decrement($client);
+        
         $this->remove($phone);
     }
 
@@ -141,6 +145,7 @@ class PhoneManager
         $this->clientManager->increment($client);
 
         $this->persist($phone);
+        $this->persist($client);
 
         return $phone;
     }

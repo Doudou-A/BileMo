@@ -4,16 +4,17 @@ namespace App\Controller;
 
 use App\Service\Message;
 use App\Service\UserManager;
+use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Swagger\Annotations as SWG;
 
 class UserController extends AbstractController implements TokenAuthenticatedController
 {
 
     /**
-     * @ROUTE("/admin/user", name="add_user", methods={"POST"})
+     * @ROUTE("/user", name="add_user", methods={"POST"})
      */
     public function addUser(UserManager $userManager)
     {
@@ -44,11 +45,16 @@ class UserController extends AbstractController implements TokenAuthenticatedCon
      *     type="string"
      * )
      */
-    public function modifyUser(UserManager $userManager, Message $message)
+    public function modifyUser(UserManager $userManager)
     {
         $userCo = $this->getUser();
 
-        $userManager->verifyUser($userCo);
+        $user = $userManager->verifyUser($userCo);
+
+        if ($user == null)
+        {
+            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+        }
 
         $user = $userManager->modify();
 
@@ -56,14 +62,14 @@ class UserController extends AbstractController implements TokenAuthenticatedCon
     }
 
     /**
-     * @ROUTE("/admin/user", name="delete_user", methods={"DELETE"})
+     * @ROUTE("/user", name="delete_user", methods={"DELETE"})
      */
-    public function deleteUser(UserManager $userManager, Message $message)
+    public function deleteUser(UserManager $userManager)
     {
         $user = $userManager->getUser();
 
         $userManager->delete($user);
 
-        return $message->removeSuccess();
+        return new Response(Response::HTTP_OK);
     }
 }

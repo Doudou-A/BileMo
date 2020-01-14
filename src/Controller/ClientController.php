@@ -6,9 +6,10 @@ use App\Service\Message;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
 use App\Service\ClientManager;
+use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
-use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ClientController extends AbstractController implements TokenAuthenticatedController
@@ -35,14 +36,27 @@ class ClientController extends AbstractController implements TokenAuthenticatedC
      *     in="query",
      *     type="string"
      * )
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="query",
+     *     type="integer",
+     *     description="serialNumber of phone you want to add to client. It's not a obligation, you can add a client without phone"
+     * )
      */
-    public function addClient(ClientManager $clientManager)
+    public function addClient(ClientManager $clientManager, PhoneManager $phoneManager)
     {
         $user = $this->getUser();
 
         $client = $clientManager->add($user);
 
-        return $clientManager->responseDetail($client);
+        $phone = $phoneManager->getData();
+
+        if ($phone->getSerialNumber() != null)
+        {
+            $phoneManager->relationAdd($client);
+        }
+        
+        return $clientManager->responseList($client);
     }
 
     /**
@@ -74,6 +88,11 @@ class ClientController extends AbstractController implements TokenAuthenticatedC
 
         $client = $userManager->verify($user);
 
+        if ($client == null)
+        {
+            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+        }
+
         $client = $clientManager->modify($client);
 
         return $clientManager->responseDetail($client);
@@ -98,6 +117,11 @@ class ClientController extends AbstractController implements TokenAuthenticatedC
 
         $client = $userManager->verify($user);
 
+        if ($client == null)
+        {
+            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+        }
+
         $phones = $phoneManager->findByClient($client);
 
         foreach ($phones as $phone) {
@@ -106,7 +130,7 @@ class ClientController extends AbstractController implements TokenAuthenticatedC
 
         $clientManager->remove($client);
     
-        return $message->removeSuccess();
+        return new Response(Response::HTTP_OK);
     }
 
     /**
@@ -148,6 +172,11 @@ class ClientController extends AbstractController implements TokenAuthenticatedC
         $user = $this->getUser();
 
         $client = $userManager->verify($user);
+
+        if ($client == null)
+        {
+            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+        }
 
         return $clientManager->responseDetail($client);
     }
