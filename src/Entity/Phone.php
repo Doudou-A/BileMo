@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hateoas\Configuration\Annotation as Hateoas;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -14,9 +15,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *  message= "Le numéro de série que vous avez indiqué est déjà utilisé !"
  * )
  * 
- * @Link(
- *  "self",
- *  route = "api_programmers_show",
+ * @Hateoas\Relation(
+ *     "create",
+ *     href=@Hateoas\Route(
+ *          "phone_create"
+ *     )
  * )
  */
 class Phone

@@ -8,23 +8,24 @@ use App\Repository\PhoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class PhoneManager
 {
     private $clientManager;
-    private $request;
-    private $serializer;
     private $manager;
+    private $request;
     private $repo;
+    private $serializer;
 
     public function __construct(ClientManager $clientManager, EntityManagerInterface $manager, PhoneRepository $repo, Request $request, SerializerInterface $serializer)
     {
         $this->clientManager = $clientManager;
+        $this->manager = $manager;
         $this->request = $request;
         $this->repo = $repo;
         $this->serializer = $serializer;
-        $this->manager = $manager;
     }
 
     public function add()
@@ -45,8 +46,7 @@ class PhoneManager
 
         $availability = $phone->getAvailability();
 
-        if($availability == false)
-        {
+        if ($availability == false) {
             exit(new Response('Ce téléphone n\'est pas disponible !', Response::HTTP_UNAUTHORIZED));
         }
     }
@@ -59,7 +59,7 @@ class PhoneManager
         $client = $phone->getClient();
 
         $this->clientManager->decrement($client);
-        
+
         $this->remove($phone);
     }
 
@@ -79,7 +79,7 @@ class PhoneManager
     }
 
     public function getData()
-    {        
+    {
         $data = $this->request->getContent();
 
         $data = $this->serializer->deserialize($data, Phone::class, 'json');
@@ -92,7 +92,7 @@ class PhoneManager
         $data = $this->getData();
 
         $serialNumber = $data->getSerialNumber();
-        
+
         $phone = $this->repo->findBySerialNumber($serialNumber);
 
         return $phone[0];
@@ -108,7 +108,7 @@ class PhoneManager
 
         if ($name != null) {
             $phone->setName($name);
-        } 
+        }
         if ($content != null) {
             $phone->setContent($content);
         }
