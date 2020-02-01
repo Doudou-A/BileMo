@@ -125,9 +125,7 @@ class ClientManager
     {
         $data = $this->serializer->serialize($client, 'json', ['groups' => 'detail']);
 
-        $response = new Response($data);
-
-        $response->headers->set('Content-Type', 'application/json');
+        $response = $this->response($data);
 
         return $response;
     }
@@ -136,9 +134,19 @@ class ClientManager
     {
         $data = $this->serializer->serialize($client, 'json', ['groups' => 'list']);
 
+        $response = $this->response($data);
+
+        return $response;
+    }
+
+    public function response($data)
+    {
         $response = new Response($data);
 
         $response->headers->set('Content-Type', 'application/json');
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($this->request);
 
         return $response;
     }

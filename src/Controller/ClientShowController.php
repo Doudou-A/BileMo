@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\Message;
 use App\Service\UserManager;
-use App\Service\PhoneManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +25,7 @@ class ClientShowController extends AbstractController implements TokenAuthentica
      *     description="Email of the client than you want to show informations"
      * )
      */
-    public function ClientShow(ClientManager $clientManager, UserManager $userManager)
+    public function ClientShow(ClientManager $clientManager, UserManager $userManager, Response $response)
     {
         $user = $this->getUser();
 
@@ -38,6 +36,10 @@ class ClientShowController extends AbstractController implements TokenAuthentica
             new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
         }
 
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+        
         return $clientManager->responseDetail($client);
     }
 }

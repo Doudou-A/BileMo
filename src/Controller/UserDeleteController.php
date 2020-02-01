@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\Message;
 use App\Service\UserManager;
-use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
