@@ -13,7 +13,7 @@ class PhoneShowController extends AbstractController implements TokenAuthenticat
 
     /**
      * @Route("/phone", name="phone_show", methods={"GET"})
-     * @SWG(
+     * @SWG\Response(
      *     response=200,
      *     description="Show a phone",
      * )
@@ -24,7 +24,7 @@ class PhoneShowController extends AbstractController implements TokenAuthenticat
      *     description="serialNumber of the phone than you want to show informations"
      * )
      */
-    public function showPhoneAction(PhoneManager $phoneManager)
+    public function PhoneShow(PhoneManager $phoneManager)
     {
 
         $phone = $phoneManager->getPhone();

@@ -23,7 +23,7 @@ class PhoneListController extends AbstractController implements TokenAuthenticat
      *     type="integer"
      * )
      */
-    public function showPhone(PhoneManager $phoneManager, PhoneLink $phoneLink, $page)
+    public function PhoneList(PhoneManager $phoneManager, PhoneLink $phoneLink, $page)
     {
         $phones = $phoneManager->pagination($page);
 
