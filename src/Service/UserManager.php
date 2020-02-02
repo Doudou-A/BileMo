@@ -120,6 +120,9 @@ class UserManager
         $response = new Response($data);
 
         $response->headers->set('Content-Type', 'application/json');
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($this->request);
 
         return $response;
     }

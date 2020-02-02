@@ -18,7 +18,7 @@ class PhoneRelationCreateController extends AbstractController implements TokenA
      * @Route("/phone/client",  name="relation_create", methods={"POST"})
      * @SWG\Response(
      *     response=200,
-     *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
+     *     description="Create a relation beetween your client and a phone. You can create several relation with one client",
      * )
      * @SWG\Parameter(
      *     name="email",
@@ -40,7 +40,7 @@ class PhoneRelationCreateController extends AbstractController implements TokenA
 
         if ($client == null)
         {
-            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+            return new Response(Response::HTTP_UNAUTHORIZED);
         }
 
         $phoneManager->relationAdd($client);
