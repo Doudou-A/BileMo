@@ -26,10 +26,6 @@ class PhoneLink
             'show' => $this->urlGenerator->generate('phone_show',[], 0),
         ];
 
-        $data = $this->serializer->serialize($links, 'json', ['groups' => 'detail']);
-
-        $response = new Response($data);
-
-        return $response;
+        return $links;
     }
 }

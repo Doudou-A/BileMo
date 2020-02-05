@@ -140,7 +140,7 @@ class ClientManager
 
     public function response($data)
     {
-        $response = new Response($data);
+        $response = new Response($data, Response::HTTP_OK);
 
         $response->headers->set('Content-Type', 'application/json');
         $response->setEtag(md5($response->getContent()));

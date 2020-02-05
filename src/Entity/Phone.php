@@ -66,6 +66,11 @@ class Phone
      * @ORM\JoinColumn(nullable=true)
      */
     private $client;
+    
+    /**
+     * @Groups({"detail"})
+     */
+    private $links;
 
     public function getId(): ?int
     {
@@ -140,6 +145,18 @@ class Phone
     public function setSerialNumber(int $serialNumber): self
     {
         $this->serialNumber = $serialNumber;
+
+        return $this;
+    }
+
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    public function setLinks($links)
+    {
+        $this->links = $links;
 
         return $this;
     }
