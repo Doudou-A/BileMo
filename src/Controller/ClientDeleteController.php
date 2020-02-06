@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Link\ClientLink;
 use App\Service\Message;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
@@ -15,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ClientDeleteController extends AbstractController implements TokenAuthenticatedController
 {
     /**
-     * @ROUTE("/client", name="delete-client", methods={"DELETE"})
+     * @ROUTE("/client", name="client_delete", methods={"DELETE"})
      * @SWG\Response(
      *     response=200,
      *     description="Delete a client",
@@ -27,7 +28,7 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
      *     description=""
      * )
      */
-    public function clientDelete(ClientManager $clientManager, PhoneManager $phoneManager, UserManager $userManager, Message $message)
+    public function clientDelete(ClientManager $clientManager, PhoneManager $phoneManager, UserManager $userManager)
     {
         $user = $this->getUser();
 
@@ -35,7 +36,7 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
 
         if ($client == null)
         {
-            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+            new Response(null, Response::HTTP_FORBIDDEN);
         }
 
         $phones = $phoneManager->findByClient($client);
@@ -45,7 +46,7 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
         }
 
         $clientManager->remove($client);
-    
-        return new Response(Response::HTTP_OK);
+
+        return new Response(null, Response::HTTP_OK);
     }
 }

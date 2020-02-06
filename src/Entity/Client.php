@@ -79,6 +79,11 @@ class Client
      */
     private $numberOfPhone;
 
+    /**
+     * @Groups({"list", "detail"})
+     */
+    private $links;
+
     public function __construct()
     {
         $this->phones = new ArrayCollection();
@@ -188,6 +193,18 @@ class Client
     public function setNumberOfPhone(int $numberOfPhone): self
     {
         $this->numberOfPhone = $numberOfPhone;
+
+        return $this;
+    }
+
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    public function setLinks($links)
+    {
+        $this->links = $links;
 
         return $this;
     }

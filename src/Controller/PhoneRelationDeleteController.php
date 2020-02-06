@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class PhoneRelationDeleteController extends AbstractController implements TokenAuthenticatedController
 {
     /**
-     * @Route("/phone/client", name="relation_delete",  methods={"DELETE"})
+     * @Route("/client/phone", name="relation_delete",  methods={"DELETE"})
      * @SWG\Response(
      *     response=200,
      *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
@@ -37,7 +37,7 @@ class PhoneRelationDeleteController extends AbstractController implements TokenA
 
         if ($verify == null)
         {
-            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+            new Response(null, Response::HTTP_FORBIDDEN);
         }
 
         $phone = $phoneManager->relationDelete();

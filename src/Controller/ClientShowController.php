@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Link\ClientLink;
 use App\Service\UserManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
@@ -25,7 +26,7 @@ class ClientShowController extends AbstractController implements TokenAuthentica
      *     description="Email of the client than you want to show informations"
      * )
      */
-    public function ClientShow(ClientManager $clientManager, UserManager $userManager, Response $response)
+    public function ClientShow(ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager)
     {
         $user = $this->getUser();
 
@@ -33,13 +34,11 @@ class ClientShowController extends AbstractController implements TokenAuthentica
 
         if ($client == null)
         {
-            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+            return new Response(null, Response::HTTP_FORBIDDEN);
         }
 
-        $response->setEtag(md5($response->getContent()));
-        $response->setPublic();
-        $response->isNotModified($request);
-        
+        $client->setLinks($clientlink->getlinks());
+
         return $clientManager->responseDetail($client);
     }
 }

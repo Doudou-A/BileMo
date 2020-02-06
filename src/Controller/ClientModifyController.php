@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Link\ClientLink;
 use App\Service\UserManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
@@ -36,7 +37,7 @@ class ClientModifyController extends AbstractController implements TokenAuthenti
      *     description="Email of the client than you want to modify"
      * )
      */
-    public function clientModify(ClientManager $clientManager, UserManager $userManager)
+    public function clientModify(ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager)
     {
         $user = $this->getUser();
 
@@ -44,10 +45,12 @@ class ClientModifyController extends AbstractController implements TokenAuthenti
 
         if ($client == null)
         {
-            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+            return new Response(null, Response::HTTP_FORBIDDEN);
         }
 
         $client = $clientManager->modify($client);
+
+        $client->setLinks($clientlink->getlinks());
 
         return $clientManager->responseDetail($client);
     }

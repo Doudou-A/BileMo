@@ -42,7 +42,7 @@ class UserModifyController extends AbstractController implements TokenAuthentica
 
         if ($user == null)
         {
-            new Response('Vous n\'êtes pas autorisé à faire cette action !', Response::HTTP_FORBIDDEN);
+            new Response(null, Response::HTTP_FORBIDDEN);
         }
 
         $user = $userManager->modify();

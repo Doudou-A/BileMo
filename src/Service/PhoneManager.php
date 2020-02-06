@@ -184,7 +184,12 @@ class PhoneManager
     {
         $data = $this->serializer->serialize($phone, 'json', ['groups' => 'list']);
 
-        $response = $this->response($data);
+        $response = $this->response($data, Response::HTTP_OK);
+
+        $response->headers->set('Content-Type', 'application/json');
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($this->request);
 
         return $response;
     }

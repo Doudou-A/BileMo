@@ -148,7 +148,8 @@ class UserManager
 
         if($user != $userCo)
         {
-            $client == null;
+            $client = null;
+
             return $client;
         } 
 
@@ -161,7 +162,9 @@ class UserManager
 
         if($user != $userCo)
         {
-            $user == null;
+            $user = null;
+
+            return $user;
         } 
 
         return $user;

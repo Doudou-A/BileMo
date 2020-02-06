@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Link\ClientLink;
 use App\Service\PhoneManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
@@ -40,18 +41,13 @@ class ClientCreateController extends AbstractController implements TokenAuthenti
      *     description="serialNumber of phone you want to add to client. It's not a obligation, you can add a client without phone"
      * )
      */
-    public function clientCreate(ClientManager $clientManager, PhoneManager $phoneManager)
+    public function clientCreate(ClientManager $clientManager, ClientLink $clientlink, PhoneManager $phoneManager)
     {
         $user = $this->getUser();
 
         $client = $clientManager->add($user);
 
-        $phone = $phoneManager->getData();
-
-        if ($phone->getSerialNumber() != null)
-        {
-            $phoneManager->relationAdd($client);
-        }
+        $client->setLinks($clientlink->getlinks());
         
         return $clientManager->responseList($client);
     }

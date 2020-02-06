@@ -15,7 +15,7 @@ class PhoneRelationCreateController extends AbstractController implements TokenA
 {
 
    /**
-     * @Route("/phone/client",  name="relation_create", methods={"POST"})
+     * @Route("/client/phone",  name="relation_create", methods={"POST"})
      * @SWG\Response(
      *     response=200,
      *     description="Create a relation beetween your client and a phone. You can create several relation with one client",

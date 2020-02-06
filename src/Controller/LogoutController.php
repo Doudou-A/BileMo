@@ -27,6 +27,6 @@ class LogoutController extends AbstractController
      */
     public function logoutMessage()
     {
-        return new Response('Vous avez été déconnecté !', Response::HTTP_OK);
-    }
+        return new Response(null, Response::HTTP_OK);
+    } 
 }

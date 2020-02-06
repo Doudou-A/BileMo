@@ -51,4 +51,4 @@ security:
         - { path: ^/phone, roles: ROLE_ADMIN, methods: [POST, PUT, DELETE] }
         - { path: ^/phone, roles: ROLE_USER, methods: [GET] }
         - { path: ^/user, roles: ROLE_ADMIN, methods: [POST, DELETE]}
-        - { path: ^/user, roles: ROLE_ADMIN, methods: [PUT]}
+        - { path: ^/user, roles: ROLE_USER, methods: [PUT]}
