@@ -8,9 +8,10 @@ class CustomExceptionController
 {
     public function error()
     {
-        $error = 'Not Found';
+        $response = new Response(null, Response::HTTP_NOT_FOUND);
+        $response->headers->set('Content-Type', 'application/json');
 
-        return new Response($error, Response::HTTP_NOT_FOUND);
+        return $response;
     }
 
 }

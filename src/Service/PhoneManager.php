@@ -48,10 +48,9 @@ class PhoneManager
         }
     }
 
-    public function delete()
+    public function delete($serialNumber)
     {
-        $data = $this->getData();
-        $phone = $this->getPhone($data);
+        $phone = $this->getPhone($serialNumber);
 
         $client = $phone->getClient();
         
@@ -86,21 +85,17 @@ class PhoneManager
         return $data;
     }
 
-    public function getPhone()
+    public function getPhone($serialNumber)
     {
-        $data = $this->getData();
-
-        $serialNumber = $data->getSerialNumber();
-
         $phone = $this->repo->findBySerialNumber($serialNumber);
 
         return $phone[0];
     }
 
-    public function modify()
+    public function modify($serialNumber)
     {
         $data = $this->getData();
-        $phone = $this->getPhone();
+        $phone = $this->getPhone($serialNumber);
 
         $name = $data->getName();
         $content = $data->getContent();
@@ -132,9 +127,9 @@ class PhoneManager
         $this->manager->flush();
     }
 
-    public function relationAdd($client)
+    public function relationAdd($client, $serialNumber)
     {
-        $phone = $this->getPhone();
+        $phone = $this->getPhone($serialNumber);
 
         $this->avaibility($phone);
 
@@ -149,9 +144,9 @@ class PhoneManager
         return $phone;
     }
 
-    public function relationDelete()
+    public function relationDelete($serialNumber)
     {
-        $phone = $this->getPhone();
+        $phone = $this->getPhone($serialNumber);
 
         $client = $phone->getClient();
 

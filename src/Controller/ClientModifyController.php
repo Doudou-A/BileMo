@@ -43,7 +43,7 @@ class ClientModifyController extends AbstractController implements TokenAuthenti
 
         $client = $userManager->verify($user);
 
-        if ($client == null)
+        if ($client === null)
         {
             return new Response(null, Response::HTTP_FORBIDDEN);
         }

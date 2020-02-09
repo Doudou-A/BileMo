@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\UserManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -34,18 +35,20 @@ class UserModifyController extends AbstractController implements TokenAuthentica
      *     type="string"
      * )
      */
-    public function modifyUser(UserManager $userManager)
+    public function modifyUser(UserManager $userManager, Request $request)
     {
         $userCo = $this->getUser();
+        
+        $username = $request->query->get('username');
 
-        $user = $userManager->verifyUser($userCo);
+        $user = $userManager->verifyUser($userCo, $username);
 
-        if ($user == null)
+        if ($user === null)
         {
             new Response(null, Response::HTTP_FORBIDDEN);
         }
 
-        $user = $userManager->modify();
+        $user = $userManager->modify($username);
 
         return $userManager->response($user);
     }

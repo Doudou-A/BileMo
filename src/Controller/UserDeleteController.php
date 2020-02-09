@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\UserManager;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -13,12 +14,14 @@ class UserDeleteController extends AbstractController implements TokenAuthentica
     /**
      * @ROUTE("/user", name="delete_user", methods={"DELETE"})
      */
-    public function deleteUser(UserManager $userManager)
+    public function deleteUser(UserManager $userManager, Request $request)
     {
-        $user = $userManager->getUser();
+        $username = $request->query->get('username');
+
+        $user = $userManager->getUser($username);
 
         $userManager->delete($user);
 
-        return new Response(Response::HTTP_OK);
+        return new Response(Response::HTTP_NO_CONTENT);
     }
 }

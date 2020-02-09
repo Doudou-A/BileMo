@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -29,18 +30,22 @@ class PhoneRelationDeleteController extends AbstractController implements TokenA
      *     type="integer"
      * )
      */
-    public function relationDelete(PhoneManager $phoneManager, UserManager $userManager)
+    public function relationDelete(PhoneManager $phoneManager, UserManager $userManager, Request $request)
     {
         $user = $this->getUser();
 
-        $verify = $userManager->verify($user);
+        $email = $request->query->get('email');
 
-        if ($verify == null)
+        $verify = $userManager->verify($user, $email);
+
+        if ($verify === null)
         {
             new Response(null, Response::HTTP_FORBIDDEN);
         }
 
-        $phone = $phoneManager->relationDelete();
+        $serialNumber = $request->query->get('serialNumber');
+
+        $phone = $phoneManager->relationDelete($serialNumber);
 
         return $phoneManager->responseDetail($phone);
     }

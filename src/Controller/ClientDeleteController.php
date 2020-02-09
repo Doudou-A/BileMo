@@ -8,6 +8,7 @@ use App\Service\UserManager;
 use App\Service\PhoneManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -28,15 +29,17 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
      *     description=""
      * )
      */
-    public function clientDelete(ClientManager $clientManager, ClientLink $clientlink, PhoneManager $phoneManager, UserManager $userManager)
+    public function clientDelete(ClientManager $clientManager, Request $request, PhoneManager $phoneManager, UserManager $userManager)
     {
         $user = $this->getUser();
 
-        $client = $userManager->verify($user);
+        $email = $request->query->get('email');
 
-        if ($client == null)
+        $client = $userManager->verify($user, $email);
+
+        if ($client === null)
         {
-            new Response(null, Response::HTTP_FORBIDDEN);
+            new Response(null, Response::HTTP_NO_CONTENT);
         }
 
         $phones = $phoneManager->findByClient($client);
@@ -47,6 +50,6 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
 
         $clientManager->remove($client);
 
-        return new Response(null, Response::HTTP_OK);
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }

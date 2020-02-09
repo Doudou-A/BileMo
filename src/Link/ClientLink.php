@@ -20,7 +20,7 @@ class ClientLink
             'modify' =>$this->urlGenerator->generate('client_modify',[], 0),
             'delete' =>$this->urlGenerator->generate('client_delete',[], 0),
             'show' => $this->urlGenerator->generate('client_show',[], 0),
-            'show list' => $this->urlGenerator->generate('client_all',['page'=>'page'], 0),
+            'show list' => $this->urlGenerator->generate('client_all',['page'=>'page', 'email'=>'email'], 0),
             'create relation [POST]' => $this->urlGenerator->generate('relation_create',[], 0),
             'delete relation [DELETE]' => $this->urlGenerator->generate('relation_delete', [], 0),
         ];

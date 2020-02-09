@@ -67,13 +67,9 @@ class ClientManager
 
         return $clients;
     }
-
-    public function getClient()
+    
+    public function getClient($email)
     {
-        $data = $this->getData();
-
-        $email = $data->getEmail();
-
         $client = $this->repo->findByEmail($email);
 
         return $client[0];

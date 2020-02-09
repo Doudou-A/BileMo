@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\PhoneManager;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -14,10 +15,12 @@ class PhoneDeleteController extends AbstractController implements TokenAuthentic
     /**
      * @Route("/phone", name="phone_delete", methods={"DELETE"})
      */
-    public function phoneDelete(PhoneManager $phoneManager)
+    public function phoneDelete(PhoneManager $phoneManager, Request $request)
     {
-        $phoneManager->delete();
+        $serialNumber = $request->query->get('serialNumber');
+
+        $phoneManager->delete($serialNumber);
         
-        return new Response(null, Response::HTTP_OK);
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }

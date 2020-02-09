@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Client;
 use App\Link\ClientLink;
 use App\Service\UserManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -26,13 +28,15 @@ class ClientShowController extends AbstractController implements TokenAuthentica
      *     description="Email of the client than you want to show informations"
      * )
      */
-    public function ClientShow(ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager)
+    public function ClientShow(ClientManager $clientManager, ClientLink $clientlink, Request $request, UserManager $userManager)
     {
         $user = $this->getUser();
 
-        $client = $userManager->verify($user);
+        $email = $request->query->get('email');
 
-        if ($client == null)
+        $client = $userManager->verify($user, $email);
+
+        if ($client === null)
         {
             return new Response(null, Response::HTTP_FORBIDDEN);
         }

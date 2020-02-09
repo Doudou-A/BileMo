@@ -7,6 +7,7 @@ use App\Service\UserManager;
 use App\Service\PhoneManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -32,22 +33,26 @@ class PhoneRelationCreateController extends AbstractController implements TokenA
      *     type="integer"
      * )
      */
-    public function relationCreate(PhoneManager $phoneManager, ClientLink $clientlink, UserManager $userManager, ClientManager $clientManager)
+    public function relationCreate(PhoneManager $phoneManager, ClientLink $clientlink, UserManager $userManager, ClientManager $clientManager, Request $request)
     {
-
         $user = $this->getUser();
 
-        $client = $userManager->verify($user);
+        $email = $request->query->get('email');
 
-        if ($client == null)
+        $client = $userManager->verify($user, $email);
+
+        if ($client === null)
         {
             return new Response(Response::HTTP_UNAUTHORIZED);
         }
 
-        $phoneManager->relationAdd($client);
+        $serialNumber = $request->query->get('serialNumber');
+
+        $phoneManager->relationAdd($client, $serialNumber);
 
         $client->setLinks($clientlink->getlinks());
 
-        return $clientManager->responseDetail($client);
+        return $clientManager->responseDetail($client)
+                ->setStatusCode(Response::HTTP_CREATED);
     }
 }

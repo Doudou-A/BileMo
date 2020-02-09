@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Link\PhoneLink;
 use App\Service\PhoneManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,10 +26,12 @@ class PhoneShowController extends AbstractController implements TokenAuthenticat
      *     description="serialNumber of the phone than you want to show informations"
      * )
      */
-    public function PhoneShow(PhoneManager $phoneManager, PhoneLink $phonelink)
+    public function PhoneShow(PhoneManager $phoneManager, Request $request, PhoneLink $phonelink)
     {
 
-        $phone = $phoneManager->getPhone();
+        $serialNumber = $request->query->get('serialNumber');
+
+        $phone = $phoneManager->getPhone($serialNumber);
 
         $phone->setLinks($phonelink->getlinks());
 
