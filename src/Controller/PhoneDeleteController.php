@@ -18,6 +18,6 @@ class PhoneDeleteController extends AbstractController implements TokenAuthentic
     {
         $phoneManager->delete();
         
-        return new Response(Response::HTTP_OK);
+        return new Response(null, Response::HTTP_OK);
     }
 }

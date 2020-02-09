@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Link\ClientLink;
 use App\Service\UserManager;
 use App\Service\PhoneManager;
 use App\Service\ClientManager;
@@ -31,7 +32,7 @@ class PhoneRelationCreateController extends AbstractController implements TokenA
      *     type="integer"
      * )
      */
-    public function relationCreate(PhoneManager $phoneManager, UserManager $userManager, ClientManager $clientManager)
+    public function relationCreate(PhoneManager $phoneManager, ClientLink $clientlink, UserManager $userManager, ClientManager $clientManager)
     {
 
         $user = $this->getUser();
@@ -45,6 +46,8 @@ class PhoneRelationCreateController extends AbstractController implements TokenA
 
         $phoneManager->relationAdd($client);
 
-        return $clientManager->responseList($client);
+        $client->setLinks($clientlink->getlinks());
+
+        return $clientManager->responseDetail($client);
     }
 }

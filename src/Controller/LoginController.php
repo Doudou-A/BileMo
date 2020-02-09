@@ -43,6 +43,7 @@ class LoginController extends AbstractController
         $jwt = JWT::encode($payload, $key);
 
         return $this->json([
+            'Id' => $user->getId(),
             'firstName' => $user->getFirstName(),
             'Name' => $user->getName(),
             'Username' => $user->getUsername(),

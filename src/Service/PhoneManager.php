@@ -27,10 +27,8 @@ class PhoneManager
         $this->serializer = $serializer;
     }
 
-    public function add()
+    public function add($phone)
     {
-        $phone = $this->getData();
-
         $phone->setDateCreated(new \DateTime());
         $phone->setAvailability(true);
 
@@ -56,8 +54,10 @@ class PhoneManager
         $phone = $this->getPhone($data);
 
         $client = $phone->getClient();
-
-        $this->clientManager->decrement($client);
+        
+        if($client != null){
+            $this->clientManager->decrement($client);
+        }
 
         $this->remove($phone);
     }

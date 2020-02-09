@@ -38,12 +38,14 @@ class Client
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"list","detail"})
+     * @Assert\NotBlank
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"list","detail"})
+     * @Assert\NotBlank
      */
     private $firstName;
 

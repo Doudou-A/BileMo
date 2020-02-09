@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ClientManager
 {
@@ -24,14 +25,12 @@ class ClientManager
         $this->serializer = $serializer;
     }
 
-    public function add($user)
+    public function add($user, $client)
     {
-        $client = $this->getData();
-
         $client->setDateCreated(new \DateTime());
         $client->setNumberOfPhone(0);
         $client->setUser($user);
-
+        
         $this->persist($client);
 
         return $client;
@@ -80,25 +79,10 @@ class ClientManager
         return $client[0];
     }
 
-    public function pagination($page, $user)
-    {
-        $nbPhonesParPage = 5;
-
-        $phones = $this->repo->findAllPagineEtTrie($page, $nbPhonesParPage, $user);
-
-        return $phones;
-    }
-
-    public function persist($entity)
-    {
-        $this->manager->persist($entity);
-        $this->manager->flush();
-    }
-
     public function modify($client)
     {
         $data = $this->getData();
-
+        
         $name = $data->getName();
         $firstName = $data->getFirstName();
 
@@ -112,6 +96,21 @@ class ClientManager
         $this->persist($client);
 
         return $client;
+    }
+
+    public function pagination($page, $user)
+    {
+        $nbPhonesParPage = 5;
+
+        $phones = $this->repo->findAllPagineEtTrie($page, $nbPhonesParPage, $user);
+
+        return $phones;
+    }
+
+    public function persist($entity)
+    {
+        $this->manager->persist($entity);
+        $this->manager->flush();
     }
 
     public function remove($entity)
@@ -132,7 +131,7 @@ class ClientManager
     public function responseList($client)
     {
         $data = $this->serializer->serialize($client, 'json', ['groups' => 'list']);
-
+        
         $response = $this->response($data, Response::HTTP_OK);
 
         $response->headers->set('Content-Type', 'application/json');

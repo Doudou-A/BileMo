@@ -28,7 +28,7 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
      *     description=""
      * )
      */
-    public function clientDelete(ClientManager $clientManager, PhoneManager $phoneManager, UserManager $userManager)
+    public function clientDelete(ClientManager $clientManager, ClientLink $clientlink, PhoneManager $phoneManager, UserManager $userManager)
     {
         $user = $this->getUser();
 

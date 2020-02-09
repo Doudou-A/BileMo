@@ -84,8 +84,8 @@ class UserManager
 
     public function modify()
     {
-        $user = $this->getUser();
         $data = $this->getData();
+        $user = $this->getUser();
 
         $name = $data->getName();
         $firstName = $data->getFirstName();
