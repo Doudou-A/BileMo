@@ -37,10 +37,8 @@ class PhoneManager
         return $phone;
     }
 
-    public function avaibility($data)
+    public function avaibility($phone)
     {
-        $phone = $this->getPhone($data);
-
         $availability = $phone->getAvailability();
 
         if ($availability == false) {

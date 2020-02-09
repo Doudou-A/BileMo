@@ -6,6 +6,7 @@ use App\Link\ClientLink;
 use App\Service\UserManager;
 use App\Service\ClientManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
@@ -37,11 +38,13 @@ class ClientModifyController extends AbstractController implements TokenAuthenti
      *     description="Email of the client than you want to modify"
      * )
      */
-    public function clientModify(ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager)
+    public function clientModify(ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager, Request $request)
     {
         $user = $this->getUser();
 
-        $client = $userManager->verify($user);
+        $email = $request->query->get('email');
+
+        $client = $userManager->verify($user, $email);
 
         if ($client === null)
         {
