@@ -8,7 +8,7 @@ Afin d'utiliser le projet, copier le git à l'aide de la commande "git clone htt
 
 # Fixture 
 
-Vous pouvez avoir une fausse base de donné de plusieurs centaines de téléphones, client et quelques utilisateur à l'aide de la commande "php bin/console doctrine:fixtures:load".
+Vous pouvez avoir une fausse base de donné de plusieurs centaines de téléphones, clients et quelques utilisateurs à l'aide de la commande "php bin/console doctrine:fixtures:load".
 
 # Utilisation
 
