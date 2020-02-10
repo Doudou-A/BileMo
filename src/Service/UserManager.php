@@ -71,17 +71,17 @@ class UserManager
         return $data;
     }
 
-    public function getUser($username)
+    public function getUser($id)
     {
-        $user = $this->repo->findByUsername($username);
+        $user = $this->repo->findById($id);
 
         return $user[0];
     }
 
-    public function modify($username)
+    public function modify($id)
     {
         $data = $this->getData();
-        $user = $this->getUser($username);
+        $user = $this->getUser($id);
 
         $name = $data->getName();
         $firstName = $data->getFirstName();
@@ -136,9 +136,9 @@ class UserManager
         return $data;
     }
 
-    public function verify($userCo, $email)
+    public function verify($userCo, $id)
     {
-        $client = $this->clientManager->getClient($email);
+        $client = $this->clientManager->getClient($id);
 
         $user = $client->getUser();
 
@@ -152,9 +152,9 @@ class UserManager
         return $client;
     }
 
-    public function verifyUser($userCo, $username)
+    public function verifyUser($userCo, $id)
     {
-        $user = $this->getUser($username);
+        $user = $this->getUser($id);
 
         if($user != $userCo)
         {

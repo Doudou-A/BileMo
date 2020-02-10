@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class PhoneRelationDeleteController extends AbstractController implements TokenAuthenticatedController
 {
     /**
-     * @Route("/client/phone", name="relation_delete",  methods={"DELETE"})
+     * @Route("/clients/{clientId}/phones/{phoneId}", name="relation_delete",  methods={"DELETE"})
      * @SWG\Response(
      *     response=200,
      *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
@@ -30,22 +30,18 @@ class PhoneRelationDeleteController extends AbstractController implements TokenA
      *     type="integer"
      * )
      */
-    public function relationDelete(PhoneManager $phoneManager, UserManager $userManager, Request $request)
+    public function relationDelete($clientId, $phoneId, PhoneManager $phoneManager, UserManager $userManager, Request $request)
     {
         $user = $this->getUser();
 
-        $email = $request->query->get('email');
-
-        $verify = $userManager->verify($user, $email);
+        $verify = $userManager->verify($user, $clientId);
 
         if ($verify === null)
         {
             new Response(null, Response::HTTP_FORBIDDEN);
         }
 
-        $serialNumber = $request->query->get('serialNumber');
-
-        $phone = $phoneManager->relationDelete($serialNumber);
+        $phone = $phoneManager->relationDelete($phoneId);
 
         return $phoneManager->responseDetail($phone);
     }

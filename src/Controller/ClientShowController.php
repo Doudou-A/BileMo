@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ClientShowController extends AbstractController implements TokenAuthenticatedController
 {
     /**
-     * @Route("/client", name="client_show", methods={"GET"})
+     * @Route("/clients/{id}", name="client_show", methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="Show a client",
@@ -28,13 +28,11 @@ class ClientShowController extends AbstractController implements TokenAuthentica
      *     description="Email of the client than you want to show informations"
      * )
      */
-    public function ClientShow(ClientManager $clientManager, ClientLink $clientlink, Request $request, UserManager $userManager)
+    public function ClientShow($id, ClientManager $clientManager, ClientLink $clientlink, Request $request, UserManager $userManager)
     {
         $user = $this->getUser();
 
-        $email = $request->query->get('email');
-
-        $client = $userManager->verify($user, $email);
+        $client = $userManager->verify($user, $id);
 
         if ($client === null)
         {

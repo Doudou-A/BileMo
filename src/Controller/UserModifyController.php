@@ -14,7 +14,7 @@ class UserModifyController extends AbstractController implements TokenAuthentica
 {
 
     /**
-     * @ROUTE("/user", name="modify_user", methods={"PUT"})
+     * @ROUTE("/users/{id}", name="modify_user", methods={"PUT"})
      * @SWG\Response(
      *     response=200,
      *     description="Modify your information about your account. You can change your name and/or firstName and/or password",
@@ -35,20 +35,18 @@ class UserModifyController extends AbstractController implements TokenAuthentica
      *     type="string"
      * )
      */
-    public function modifyUser(UserManager $userManager, Request $request)
+    public function modifyUser($id, UserManager $userManager, Request $request)
     {
         $userCo = $this->getUser();
+
+        $user = $userManager->verifyUser($userCo, $id);
         
-        $username = $request->query->get('username');
-
-        $user = $userManager->verifyUser($userCo, $username);
-
         if ($user === null)
         {
-            new Response(null, Response::HTTP_FORBIDDEN);
+            return new Response(null, Response::HTTP_FORBIDDEN);
         }
 
-        $user = $userManager->modify($username);
+        $user = $userManager->modify($id);
 
         return $userManager->response($user);
     }

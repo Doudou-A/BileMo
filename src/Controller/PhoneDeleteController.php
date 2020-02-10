@@ -13,13 +13,11 @@ class PhoneDeleteController extends AbstractController implements TokenAuthentic
 {
 
     /**
-     * @Route("/phone", name="phone_delete", methods={"DELETE"})
+     * @Route("/phones/{id}", name="phone_delete", methods={"DELETE"})
      */
-    public function phoneDelete(PhoneManager $phoneManager, Request $request)
+    public function phoneDelete($id, PhoneManager $phoneManager, Request $request)
     {
-        $serialNumber = $request->query->get('serialNumber');
-
-        $phoneManager->delete($serialNumber);
+        $phoneManager->delete($id);
         
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

@@ -17,7 +17,7 @@ class PhoneLink
     public function getLinks()
     {
         $links = [
-            'show' => $this->urlGenerator->generate('phone_show',['serialNumber'=>'serialNumber'], 0),
+            'show' => $this->urlGenerator->generate('phone_show',['id'=>'id'], 0),
             'show list' => $this->urlGenerator->generate('phone_list',['page'=>'page'], 0),
         ];
 

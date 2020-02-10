@@ -12,13 +12,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class UserDeleteController extends AbstractController implements TokenAuthenticatedController
 {
     /**
-     * @ROUTE("/user", name="delete_user", methods={"DELETE"})
+     * @ROUTE("/users/{id}", name="delete_user", methods={"DELETE"})
      */
-    public function deleteUser(UserManager $userManager, Request $request)
+    public function deleteUser($id, UserManager $userManager, Request $request)
     {
-        $username = $request->query->get('username');
-
-        $user = $userManager->getUser($username);
+        $user = $userManager->getUser($id);
 
         $userManager->delete($user);
 

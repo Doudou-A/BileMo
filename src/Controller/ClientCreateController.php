@@ -19,7 +19,7 @@ class ClientCreateController extends AbstractController implements TokenAuthenti
 {
 
     /**
-     * @ROUTE("/client", name="client_create", methods={"POST"})
+     * @ROUTE("/clients", name="client_create", methods={"POST"})
      * @SWG\Response(
      *     response=201,
      *     description="add a client",

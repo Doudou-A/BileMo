@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ClientDeleteController extends AbstractController implements TokenAuthenticatedController
 {
     /**
-     * @ROUTE("/client", name="client_delete", methods={"DELETE"})
+     * @ROUTE("/clients/{id}", name="client_delete", methods={"DELETE"})
      * @SWG\Response(
      *     response=200,
      *     description="Delete a client",
@@ -29,13 +29,11 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
      *     description=""
      * )
      */
-    public function clientDelete(ClientManager $clientManager, Request $request, PhoneManager $phoneManager, UserManager $userManager)
+    public function clientDelete($id, ClientManager $clientManager, Request $request, PhoneManager $phoneManager, UserManager $userManager)
     {
         $user = $this->getUser();
 
-        $email = $request->query->get('email');
-
-        $client = $userManager->verify($user, $email);
+        $client = $userManager->verify($user, $id);
 
         if ($client === null)
         {

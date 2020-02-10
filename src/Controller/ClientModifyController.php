@@ -16,7 +16,7 @@ class ClientModifyController extends AbstractController implements TokenAuthenti
 {
     
     /**
-     * @Route("/client", name="client_modify", methods={"PUT"})
+     * @Route("/clients/{id}", name="client_modify", methods={"PUT"})
      * * @SWG\Response(
      *     response=200,
      *     description="Modify the name and/or the firstName. You can't change the email but you must to post him.",
@@ -38,13 +38,11 @@ class ClientModifyController extends AbstractController implements TokenAuthenti
      *     description="Email of the client than you want to modify"
      * )
      */
-    public function clientModify(ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager, Request $request)
+    public function clientModify($id, ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager, Request $request)
     {
         $user = $this->getUser();
 
-        $email = $request->query->get('email');
-
-        $client = $userManager->verify($user, $email);
+        $client = $userManager->verify($user, $id);
 
         if ($client === null)
         {

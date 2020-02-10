@@ -28,6 +28,7 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"list", "detail"})
      */
     private $id;
 

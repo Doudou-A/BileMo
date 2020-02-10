@@ -14,7 +14,7 @@ class PhoneCreateController extends AbstractController implements TokenAuthentic
 {
 
     /**
-     * @Route("/phone", name="phone_create", methods={"POST"})
+     * @Route("/phones", name="phone_create", methods={"POST"})
      */
     public function phoneCreate(PhoneManager $phoneManager, ValidatorInterface $validator, PhoneLink $phonelink)
     {

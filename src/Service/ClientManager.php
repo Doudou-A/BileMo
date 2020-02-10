@@ -68,11 +68,18 @@ class ClientManager
         return $clients;
     }
     
-    public function getClient($email)
+    public function getClient($id)
     {
-        $client = $this->repo->findByEmail($email);
+        $client = $this->repo->findById($id);
 
         return $client[0];
+    }
+
+    public function getAll($user)
+    {
+        $clients = $this->repo->findByUser($user);
+
+        return $clients;
     }
 
     public function modify($client)
@@ -127,7 +134,7 @@ class ClientManager
     public function responseList($client)
     {
         $data = $this->serializer->serialize($client, 'json', ['groups' => 'list']);
-        
+
         $response = $this->response($data, Response::HTTP_OK);
 
         $response->headers->set('Content-Type', 'application/json');

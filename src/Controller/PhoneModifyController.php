@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Service\PhoneManager;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\TokenAuthenticatedController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,13 +11,11 @@ class PhoneModifyController extends AbstractController implements TokenAuthentic
 {
 
     /**
-     * @Route("/phone", name="phone_modify", methods={"PUT"})
+     * @Route("/phones/{id}", name="phone_modify", methods={"PUT"})
      */
-    public function phoneModify(PhoneManager $phoneManager, Request $request)
+    public function phoneModify($id, PhoneManager $phoneManager)
     {
-        $serialNumber = $request->query->get('serialNumber');
-
-        $phone = $phoneManager->modify($serialNumber);
+        $phone = $phoneManager->modify($id);
 
         return $phoneManager->responseDetail($phone);
     }

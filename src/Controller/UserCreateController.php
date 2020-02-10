@@ -11,7 +11,7 @@ class UserCreateController extends AbstractController implements TokenAuthentica
 {
 
     /**
-     * @ROUTE("/user", name="add_user", methods={"POST"})
+     * @ROUTE("/users", name="add_user", methods={"POST"})
      */
     public function addUser(UserManager $userManager)
     {

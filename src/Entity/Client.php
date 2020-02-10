@@ -31,7 +31,7 @@ class Client
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"detail"})
+     * @Groups({"list","detail"})
      */
     private $id;
 

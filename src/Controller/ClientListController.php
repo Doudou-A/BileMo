@@ -12,7 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ClientListController extends AbstractController implements TokenAuthenticatedController
 {
     /**
-     * @Route("/clients", name="client_all", methods={"GET"})
+     * @Route("/clients", name="client_list", methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="Show all of your clients",
@@ -25,9 +25,9 @@ class ClientListController extends AbstractController implements TokenAuthentica
      */
     public function ClientList(ClientManager $clientManager, Request $request)
     {
-        $page = $request->query->get('page');
-
         $user = $this->getUser()->getId();
+
+        $page = $request->query->get('page');
 
         $clients = $clientManager->pagination($page, $user);
 
