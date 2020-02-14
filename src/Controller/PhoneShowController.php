@@ -20,10 +20,10 @@ class PhoneShowController extends AbstractController implements TokenAuthenticat
      *     description="Show a phone",
      * )
      * @SWG\Parameter(
-     *     name="serialNumber",
+     *     name="Id",
      *     in="query",
      *     type="string",
-     *     description="serialNumber of the phone than you want to show informations"
+     *     description="Id of the phone than you want to show informations"
      * )
      */
     public function PhoneShow($id, PhoneManager $phoneManager, Request $request, PhoneLink $phonelink)

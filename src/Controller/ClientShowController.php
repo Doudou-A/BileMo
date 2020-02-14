@@ -22,10 +22,10 @@ class ClientShowController extends AbstractController implements TokenAuthentica
      *     description="Show a client",
      * )
      * @SWG\Parameter(
-     *     name="Email",
+     *     name="Id",
      *     in="query",
      *     type="string",
-     *     description="Email of the client than you want to show informations"
+     *     description="Id of the client than you want to show informations"
      * )
      */
     public function ClientShow($id, ClientManager $clientManager, ClientLink $clientlink, Request $request, UserManager $userManager)

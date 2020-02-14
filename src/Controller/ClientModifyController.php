@@ -32,10 +32,10 @@ class ClientModifyController extends AbstractController implements TokenAuthenti
      *     type="string"
      * )
      * @SWG\Parameter(
-     *     name="Email",
+     *     name="id",
      *     in="query",
-     *     type="string",
-     *     description="Email of the client than you want to modify"
+     *     type="integer",
+     *     description="id of the client than you want to modify"
      * )
      */
     public function clientModify($id, ClientManager $clientManager, ClientLink $clientlink, UserManager $userManager, Request $request)

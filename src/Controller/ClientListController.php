@@ -18,7 +18,7 @@ class ClientListController extends AbstractController implements TokenAuthentica
      *     description="Show all of your clients",
      * )
      * @SWG\Parameter(
-     *     name="page on URL",
+     *     name="page",
      *     in="query",
      *     type="integer"
      * )

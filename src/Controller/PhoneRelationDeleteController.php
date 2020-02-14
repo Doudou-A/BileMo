@@ -20,12 +20,12 @@ class PhoneRelationDeleteController extends AbstractController implements TokenA
      *     description="Create a relation beetween your client and a phone. You can create several ralation with one client",
      * )
      * @SWG\Parameter(
-     *     name="email",
+     *     name="Id phone",
      *     in="query",
-     *     type="string"
+     *     type="integer"
      * )
      * @SWG\Parameter(
-     *     name="serialNumber",
+     *     name="Id phone",
      *     in="query",
      *     type="integer"
      * )

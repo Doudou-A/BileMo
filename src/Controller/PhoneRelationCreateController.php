@@ -23,12 +23,12 @@ class PhoneRelationCreateController extends AbstractController implements TokenA
      *     description="Create a relation beetween your client and a phone. You can create several relation with one client",
      * )
      * @SWG\Parameter(
-     *     name="email",
+     *     name="Id client",
      *     in="query",
-     *     type="string"
+     *     type="integer"
      * )
      * @SWG\Parameter(
-     *     name="serialNumber",
+     *     name="Id phone",
      *     in="query",
      *     type="integer"
      * )

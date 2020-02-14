@@ -23,9 +23,9 @@ class ClientDeleteController extends AbstractController implements TokenAuthenti
      *     description="Delete a client",
      * )
      * @SWG\Parameter(
-     *     name="Email",
+     *     name="id",
      *     in="query",
-     *     type="string",
+     *     type="integer",
      *     description=""
      * )
      */

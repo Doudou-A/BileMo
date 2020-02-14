@@ -19,7 +19,7 @@ class PhoneListController extends AbstractController implements TokenAuthenticat
      *     description="Show all of phone available",
      * )
      * @SWG\Parameter(
-     *     name="page on URL",
+     *     name="page",
      *     in="query",
      *     type="integer"
      * )

@@ -20,9 +20,9 @@ class UserModifyController extends AbstractController implements TokenAuthentica
      *     description="Modify your information about your account. You can change your name and/or firstName and/or password",
      * )
      * @SWG\Parameter(
-     *     name="name",
+     *     name="Id",
      *     in="query",
-     *     type="string"
+     *     type="integer"
      * )
      * @SWG\Parameter(
      *     name="firstName",

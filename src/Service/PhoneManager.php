@@ -86,7 +86,7 @@ class PhoneManager
     public function getPhone($id)
     {
         $phone = $this->repo->findById($id);
-        dd($phone);
+
         return $phone[0];
     }
 
